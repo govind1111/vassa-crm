@@ -1,5 +1,5 @@
 /**
- * Real Estate CRM - Google Sheets + Apps Script (v4.5 - lead ID generation fix)
+ * Real Estate CRM - Google Sheets + Apps Script (v4.6 - form data ALL CAPS + Indian date format)
  * Govind Gore | 2026-11
  *
  * Kya karta hai:
@@ -281,10 +281,15 @@ function addLead_(d, by) {
     var id = nextLeadId_(), now = new Date();
     var rowArr = new Array(sh.getLastColumn()).fill('');
     function put(h, v) { if (cols[h]) rowArr[cols[h] - 1] = v; }
-    put(H.id, id); put(H.date, now); put(H.name, d.name || ''); put(H.phone, phone || d.phone || '');
-    put(H.source, [d.source, d.campaign].filter(String).join(' / ')); put(H.project, d.project || '');
-    put(H.status, 'New'); put(H.notes, d.notes || ''); put(H.updated, now);
+    put(H.id, id); put(H.date, now); put(H.name, up_(d.name || '')); put(H.phone, phone || d.phone || '');
+    put(H.source, up_([d.source, d.campaign].filter(String).join(' / '))); put(H.project, up_(d.project || ''));
+    put(H.status, 'New'); put(H.notes, up_(d.notes || '')); put(H.updated, now);
     sh.appendRow(rowArr);
+    var newRow = sh.getLastRow();
+    setFmt_(sh, newRow, cols[H.date], DATETIME_FMT);
+    setFmt_(sh, newRow, cols[H.assignedAt], DATETIME_FMT);
+    setFmt_(sh, newRow, cols[H.updated], DATETIME_FMT);
+    setFmt_(sh, newRow, cols[H.followup], DATE_FMT);
     log_(id, 'Created', '', 'New', by, 'Source: ' + (d.source || by));
 
     // v4.3: project site se match hua to us site ka active executive auto-assign + alert
@@ -354,7 +359,10 @@ function readRow_(sh, r, cols) {
 function setCell_(sh, r, cols, header, val) { if (cols[header]) sh.getRange(r, cols[header]).setValue(val); }
 function inRange_(c, a, b) { return c && c >= a && c <= b; }
 function log_(id, type, oldV, newV, by, note) {
-  SpreadsheetApp.getActive().getSheetByName(SHEET_LOG).appendRow([new Date(), id, type, lv_(oldV), lv_(newV), by, note || '']);
+  var sh = SpreadsheetApp.getActive().getSheetByName(SHEET_LOG);
+  var r = sh.getLastRow() + 1;
+  sh.appendRow([new Date(), id, type, lv_(oldV), lv_(newV), by, note || '']);
+  setFmt_(sh, r, 1, DATETIME_FMT);
 }
 // Log value ko saaf text banao: Date -> '07-Nov-2026' (time ho to '07-Nov-2026 17:19')
 function lv_(v) {
@@ -375,6 +383,12 @@ function normPhone_(p) {
   if (d.length === 10) d = '91' + d;
   return d;
 }
+// Saara text data ALL CAPS me store karo (form se aane wala data) - uniqueness ke liye
+function up_(v) { return (typeof v === 'string') ? v.toUpperCase() : v; }
+// Indian date format (sheet display ke liye)
+var DATE_FMT = 'dd/mm/yyyy';
+var DATETIME_FMT = 'dd/mm/yyyy hh:mm';
+function setFmt_(sh, r, c, fmt) { try { if (sh && c) sh.getRange(r, c).setNumberFormat(fmt || DATE_FMT); } catch (e) {} }
 function findExecutive_(name) {
   var sh = SpreadsheetApp.getActive().getSheetByName(SHEET_EXEC), last = sh.getLastRow();
   if (last < 2) return null;
@@ -547,7 +561,7 @@ function uiGetSites() {
 
 function uiSaveSite(site) {
   site = site || {};
-  var name = String(site.name || '').trim();
+  var name = up_(String(site.name || '').trim());
   if (!name) throw new Error('Project site name is required');
   var lock = LockService.getDocumentLock(); lock.waitLock(20000);
   try {
@@ -561,7 +575,7 @@ function uiSaveSite(site) {
       for (var i = 0; i < names.length; i++) if (!String(names[i][0]).trim()) { row = i + 2; break; }
       if (!row) row = last + 1;
     }
-    sh.getRange(row, 1, 1, SITE_HDR.length).setValues([[name, site.notes || '']]);
+    sh.getRange(row, 1, 1, SITE_HDR.length).setValues([[name, up_(site.notes || '')]]);
     if (old && old !== name) renameSiteInExecutives_(old, name);
   } finally { lock.releaseLock(); }
   return { sites: uiGetSites(), executives: uiGetExecutives() };
@@ -648,6 +662,8 @@ function routeLeadBySite_(sh, id, cols, project) {
   setCell_(sh, r, cols, H.status, 'Assigned');
   setCell_(sh, r, cols, H.assignedAt, now);
   setCell_(sh, r, cols, H.updated, now);
+  setFmt_(sh, r, cols[H.assignedAt], DATETIME_FMT);
+  setFmt_(sh, r, cols[H.updated], DATETIME_FMT);
   log_(id, 'Assignment', '', ex.name, 'AUTO', 'Site routing: ' + match.site.name + ' (' + match.how + ' match)');
   if (users.length > 1) {
     log_(id, 'Routing', '', ex.name, 'AUTO', 'Multiple executives on ' + match.site.name + ' - assigned to ' + ex.name +
@@ -660,10 +676,10 @@ function routeLeadBySite_(sh, id, cols, project) {
 }
 
 function uiSaveExecutive(ex) {
-  var name = String(ex.name || '').trim(), phone = normPhone_(ex.phone);
+  var name = up_(String(ex.name || '').trim()), phone = normPhone_(ex.phone);
   if (!name) throw new Error('Name is required');
   if (!/^91\d{10}$/.test(phone)) throw new Error('WhatsApp number must be 10 digits (91 is added automatically)');
-  var sites = splitSites_(ex.sites !== undefined ? ex.sites : ex.sitesText);
+  var sites = splitSites_(ex.sites !== undefined ? ex.sites : ex.sitesText).map(up_);
   var lock = LockService.getDocumentLock(); lock.waitLock(20000);
   try {
     var sh = SpreadsheetApp.getActive().getSheetByName(SHEET_EXEC);
@@ -681,10 +697,10 @@ function uiSaveExecutive(ex) {
       for (var i = 0; i < names.length; i++) if (!String(names[i][0]).trim()) { row = i + 2; break; }
       if (!row) row = last + 1;
     }
-    sh.getRange(row, cols.name).setValue(name);
+    sh.getRange(row, cols.name).setValue(up_(name));
     sh.getRange(row, cols.phone).setNumberFormat('@').setValue(phone);
     sh.getRange(row, cols.active).setValue(ex.active === 'No' ? 'No' : 'Yes');
-    sh.getRange(row, cols.notes).setValue(ex.notes || '');
+    sh.getRange(row, cols.notes).setValue(up_(ex.notes || ''));
     sh.getRange(row, cols.sites).setValue(sites.join(', '));
     if (oldName && oldName !== name) renameExecutiveInLeads_(oldName, name);
   } finally { lock.releaseLock(); }
@@ -695,7 +711,7 @@ function renameExecutiveInLeads_(oldName, newName) {
   var sh = SpreadsheetApp.getActive().getSheetByName(SHEET_LEADS), cols = headerMap_(sh), last = sh.getLastRow();
   if (last < 2 || !cols[H.exec]) return;
   var rng = sh.getRange(2, cols[H.exec], last - 1, 1), v = rng.getValues(), changed = false;
-  v.forEach(function (r) { if (String(r[0]).trim() === oldName) { r[0] = newName; changed = true; } });
+  v.forEach(function (r) { if (String(r[0]).trim().toLowerCase() === String(oldName).trim().toLowerCase()) { r[0] = up_(newName); changed = true; } });
   if (changed) rng.setValues(v);
 }
 
@@ -730,10 +746,11 @@ function uiUpdateLead(id, changes) {
     if (FOLLOWUP_REQUIRED.indexOf(newStatus) > -1 && !finalFollow) throw new Error('Please enter a next follow-up date (required for ' + newStatus + ' leads)');
 
     if (changes.exec !== undefined && String(changes.exec) !== String(row.exec)) {
-      setCell_(sh, r, cols, H.exec, changes.exec);
+      setCell_(sh, r, cols, H.exec, up_(changes.exec));
       log_(id, 'Assignment', row.exec, changes.exec, user, changes.exec ? 'Executive assigned (GUI)' : 'Executive removed (GUI)');
       if (changes.exec) {
         setCell_(sh, r, cols, H.assignedAt, now);
+        setFmt_(sh, r, cols[H.assignedAt], DATETIME_FMT);
         if ((changes.status === undefined || changes.status === row.status) && (!row.status || row.status === 'New' || row.status === 'Lost')) {
           newStatus = 'Assigned';
         }
@@ -753,16 +770,17 @@ function uiUpdateLead(id, changes) {
       if (changes.followup !== oldF) {
         var f = changes.followup ? changes.followup.split('-') : null;
         setCell_(sh, r, cols, H.followup, f ? new Date(Number(f[0]), Number(f[1]) - 1, Number(f[2])) : '');
+        setFmt_(sh, r, cols[H.followup], DATE_FMT);
         log_(id, 'Follow-up', oldF, changes.followup, user, '');
       }
     }
     if (changes.note) {
       var stamp = Utilities.formatDate(now, 'Asia/Kolkata', 'dd-MMM HH:mm');
-      setCell_(sh, r, cols, H.notes, (row.notes ? row.notes + '\n' : '') + '[' + stamp + '] ' + changes.note);
+      setCell_(sh, r, cols, H.notes, (row.notes ? row.notes + '\n' : '') + '[' + stamp + '] ' + up_(changes.note));
       log_(id, 'Note', '', changes.note, user, '');
     }
     setCell_(sh, r, cols, H.updated, now);
-
+    setFmt_(sh, r, cols[H.updated], DATETIME_FMT);
     if (changes.exec) {
       row = readRow_(sh, r, cols);
       sendAssignmentAlert_(sh, r, cols, row);
@@ -945,7 +963,7 @@ function uiSaveSettings(s) {
     adClean[m] = {};
     Object.keys(ad[m] || {}).forEach(function (k) { var n = Number(ad[m][k]); if (n > 0) adClean[m][String(k).slice(0, 30)] = n; });
   });
-  var obj = { company: String(s.company !== undefined ? s.company : cur.company).slice(0, 100), bossPhone: boss, adSpend: adClean, templates: clean };
+  var obj = { company: up_(String(s.company !== undefined ? s.company : cur.company)).slice(0, 100), bossPhone: boss, adSpend: adClean, templates: clean };
   var json = JSON.stringify(obj);
   if (json.length > 8500) throw new Error('Settings are too large (please shorten the templates)');
   PropertiesService.getScriptProperties().setProperty(SETTINGS_KEY, json);

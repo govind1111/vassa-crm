@@ -21,36 +21,36 @@
   var ST = ['New', 'Assigned', 'Contacted', 'Site Visit', 'Negotiation', 'Closed', 'Lost'];
 
   var LEADS = [
-    { id: 'L-0001', date: ago(3000), name: 'Rohit Sharma', phone: '919812345670', source: 'Instagram', project: 'Vassa Heights 2BHK', exec: 'Amit', status: 'Contacted', lost: '', followup: addDays(-2), notes: 'Wants east facing', wa: '', assignedAt: ago(2900), updated: ago(300) },
-    { id: 'L-0002', date: ago(2800), name: 'Priya Nair', phone: '919812345671', source: 'Facebook/Meta', project: 'Vassa Greens 3BHK', exec: 'Sneha', status: 'Site Visit', lost: '', followup: addDays(0), notes: 'Coming with husband', wa: '', assignedAt: ago(2700), updated: ago(120) },
-    { id: 'L-0003', date: ago(2600), name: 'Imran Qureshi', phone: '919812345672', source: 'Walk-in', project: 'Vassa Enclave Plot', exec: 'Amit', status: 'New', lost: '', followup: addDays(0), notes: '', wa: '', assignedAt: '', updated: ago(2600) },
-    { id: 'L-0004', date: ago(2000), name: 'Kavita Deshmukh', phone: '919812345673', source: 'Instagram', project: 'Vassa Heights 3BHK', exec: '', status: 'New', lost: '', followup: '', notes: 'Called twice, no answer', wa: '', assignedAt: '', updated: ago(1900) },
-    { id: 'L-0005', date: ago(1500), name: 'Sanjay Patil', phone: '919812345674', source: 'Facebook/Meta', project: 'Vassa Greens 2BHK', exec: 'Sneha', status: 'Negotiation', lost: '', followup: addDays(1), notes: 'Asking 5% discount', wa: '', assignedAt: ago(1400), updated: ago(90) },
-    { id: 'L-0006', date: ago(1200), name: 'Meera Joshi', phone: '919812345675', source: 'Referral', project: 'Vassa Enclave Plot', exec: 'Ravi', status: 'Closed', lost: '', followup: '', notes: 'Booked A-12', wa: '', assignedAt: ago(1100), updated: ago(500) },
-    { id: 'L-0007', date: ago(900), name: 'Anil Kumar', phone: '919812345676', source: 'Instagram', project: 'Vassa Heights 2BHK', exec: 'Ravi', status: 'Lost', lost: 'Budget issue', followup: '', notes: '', wa: '', assignedAt: ago(800), updated: ago(400) },
-    { id: 'L-0008', date: ago(600), name: 'Fatima Sheikh', phone: '919812345677', source: 'Facebook/Meta', project: 'Vassa Greens 3BHK', exec: 'Amit', status: 'Assigned', lost: '', followup: addDays(3), notes: 'Prefers weekend call', wa: '', assignedAt: ago(200), updated: ago(200) },
-    { id: 'L-0009', date: ago(300), name: 'Vikram Rathod', phone: '919812345678', source: 'Instagram', project: 'Vassa Heights 3BHK', exec: 'Sneha', status: 'Contacted', lost: '', followup: addDays(7), notes: 'Loan pre-approved', wa: '', assignedAt: ago(280), updated: ago(60) },
-    { id: 'L-0010', date: ago(60), name: 'Neha Bhatt', phone: '919812345679', source: 'Walk-in', project: 'Vassa Enclave Plot', exec: '', status: 'New', lost: '', followup: addDays(2), notes: '', wa: '', assignedAt: '', updated: ago(60) }
+    { id: 'L-0001', date: ago(3000), name: 'ROHIT SHARMA', phone: '919812345670', source: 'INSTAGRAM', project: 'VASSA HEIGHTS 2BHK', exec: 'AMIT', status: 'Contacted', lost: '', followup: addDays(-2), notes: 'WANTS EAST FACING', wa: '', assignedAt: ago(2900), updated: ago(300) },
+    { id: 'L-0002', date: ago(2800), name: 'PRIYA NAIR', phone: '919812345671', source: 'FACEBOOK/META', project: 'VASSA GREENS 3BHK', exec: 'SNEHA', status: 'Site Visit', lost: '', followup: addDays(0), notes: 'COMING WITH HUSBAND', wa: '', assignedAt: ago(2700), updated: ago(120) },
+    { id: 'L-0003', date: ago(2600), name: 'IMRAN QURESHI', phone: '919812345672', source: 'WALK-IN', project: 'VASSA ENCLAVE PLOT', exec: 'AMIT', status: 'New', lost: '', followup: addDays(0), notes: '', wa: '', assignedAt: '', updated: ago(2600) },
+    { id: 'L-0004', date: ago(2000), name: 'KAVITA DESHMUKH', phone: '919812345673', source: 'INSTAGRAM', project: 'VASSA HEIGHTS 3BHK', exec: '', status: 'New', lost: '', followup: '', notes: 'CALLED TWICE, NO ANSWER', wa: '', assignedAt: '', updated: ago(1900) },
+    { id: 'L-0005', date: ago(1500), name: 'SANJAY PATIL', phone: '919812345674', source: 'FACEBOOK/META', project: 'VASSA GREENS 2BHK', exec: 'SNEHA', status: 'Negotiation', lost: '', followup: addDays(1), notes: 'ASKING 5% DISCOUNT', wa: '', assignedAt: ago(1400), updated: ago(90) },
+    { id: 'L-0006', date: ago(1200), name: 'MEERA JOSHI', phone: '919812345675', source: 'REFERRAL', project: 'VASSA ENCLAVE PLOT', exec: 'RAVI', status: 'Closed', lost: '', followup: '', notes: 'BOOKED A-12', wa: '', assignedAt: ago(1100), updated: ago(500) },
+    { id: 'L-0007', date: ago(900), name: 'ANIL KUMAR', phone: '919812345676', source: 'INSTAGRAM', project: 'VASSA HEIGHTS 2BHK', exec: 'RAVI', status: 'Lost', lost: 'BUDGET ISSUE', followup: '', notes: '', wa: '', assignedAt: ago(800), updated: ago(400) },
+    { id: 'L-0008', date: ago(600), name: 'FATIMA SHEIKH', phone: '919812345677', source: 'FACEBOOK/META', project: 'VASSA GREENS 3BHK', exec: 'AMIT', status: 'Assigned', lost: '', followup: addDays(3), notes: 'PREFERS WEEKEND CALL', wa: '', assignedAt: ago(200), updated: ago(200) },
+    { id: 'L-0009', date: ago(300), name: 'VIKRAM RATHOD', phone: '919812345678', source: 'INSTAGRAM', project: 'VASSA HEIGHTS 3BHK', exec: 'SNEHA', status: 'Contacted', lost: '', followup: addDays(7), notes: 'LOAN PRE-APPROVED', wa: '', assignedAt: ago(280), updated: ago(60) },
+    { id: 'L-0010', date: ago(60), name: 'NEHA BHATT', phone: '919812345679', source: 'WALK-IN', project: 'VASSA ENCLAVE PLOT', exec: '', status: 'New', lost: '', followup: addDays(2), notes: '', wa: '', assignedAt: '', updated: ago(60) }
   ];
 
   var EXECS = [
-    { row: 2, name: 'Amit', phone: '919876500001', active: 'Yes', notes: 'Instagram leads', sites: ['Vassa Heights', 'Vassa Enclave'] },
-    { row: 3, name: 'Sneha', phone: '919876500002', active: 'Yes', notes: '', sites: ['Vassa Greens'] },
-    { row: 4, name: 'Ravi', phone: '919876500003', active: 'No', notes: 'On leave', sites: [] }
+    { row: 2, name: 'AMIT', phone: '919876500001', active: 'Yes', notes: 'INSTAGRAM LEADS', sites: ['VASSA HEIGHTS', 'VASSA ENCLAVE'] },
+    { row: 3, name: 'SNEHA', phone: '919876500002', active: 'Yes', notes: '', sites: ['VASSA GREENS'] },
+    { row: 4, name: 'RAVI', phone: '919876500003', active: 'No', notes: 'ON LEAVE', sites: [] }
   ];
 
   var SITES = [
-    { row: 2, name: 'Vassa Heights', notes: 'Baner · Tower A/B' },
-    { row: 3, name: 'Vassa Greens', notes: 'Wakad · 2 & 3 BHK' },
-    { row: 4, name: 'Vassa Enclave', notes: 'plots' }
+    { row: 2, name: 'VASSA HEIGHTS', notes: 'BANER · TOWER A/B' },
+    { row: 3, name: 'VASSA GREENS', notes: 'WAKAD · 2 & 3 BHK' },
+    { row: 4, name: 'VASSA ENCLAVE', notes: 'PLOTS' }
   ];
 
   var LOG = [
-    { at: ago(20), id: 'L-0010', type: 'Created', from: '', to: 'New', by: 'preview@local', note: 'Source: Walk-in' },
-    { at: ago(90), id: 'L-0005', type: 'Status', from: 'Contacted', to: 'Negotiation', by: 'Sneha', note: '' },
-    { at: ago(200), id: 'L-0008', type: 'Assigned', from: 'New', to: 'Assigned', by: 'preview@local', note: 'Assigned to Amit' },
-    { at: ago(400), id: 'L-0007', type: 'Status', from: 'Contacted', to: 'Lost', by: 'Ravi', note: 'Budget issue' },
-    { at: ago(500), id: 'L-0006', type: 'Status', from: 'Negotiation', to: 'Closed', by: 'Ravi', note: 'Booked A-12' }
+    { at: ago(20), id: 'L-0010', type: 'Created', from: '', to: 'New', by: 'PREVIEW@LOCAL', note: 'SOURCE: WALK-IN' },
+    { at: ago(90), id: 'L-0005', type: 'Status', from: 'Contacted', to: 'Negotiation', by: 'SNEHA', note: '' },
+    { at: ago(200), id: 'L-0008', type: 'Assigned', from: 'New', to: 'Assigned', by: 'PREVIEW@LOCAL', note: 'ASSIGNED TO AMIT' },
+    { at: ago(400), id: 'L-0007', type: 'Status', from: 'Contacted', to: 'Lost', by: 'RAVI', note: 'BUDGET ISSUE' },
+    { at: ago(500), id: 'L-0006', type: 'Status', from: 'Negotiation', to: 'Closed', by: 'RAVI', note: 'BOOKED A-12' }
   ];
 
   var DEFAULT_TPL = [
@@ -60,7 +60,7 @@
   ];
 
   var SETTINGS = {
-    company: 'Vassa Properties',
+    company: 'VASSA PROPERTIES',
     bossPhone: '9876543210',
     adSpend: (function () {
       var d = new Date(), m = d.getFullYear() + '-' + pad(d.getMonth() + 1);
@@ -103,7 +103,7 @@
 
     uiSaveSettings: function (s) {
       s = s || {};
-      if (s.company !== undefined) SETTINGS.company = String(s.company);
+      if (s.company !== undefined) SETTINGS.company = String(s.company).toUpperCase();
       if (s.bossPhone !== undefined) SETTINGS.bossPhone = String(s.bossPhone).replace(/\D/g, '').slice(-10);
       if (s.adSpend !== undefined) SETTINGS.adSpend = s.adSpend;
       if (s.templates !== undefined) SETTINGS.templates = s.templates;
@@ -122,13 +122,13 @@
       if (ex.row) {
         for (var i = 0; i < EXECS.length; i++) if (EXECS[i].row === Number(ex.row)) {
           var oldName = EXECS[i].name;
-          EXECS[i].name = ex.name; EXECS[i].phone = phone;
-          EXECS[i].active = ex.active === 'No' ? 'No' : 'Yes'; EXECS[i].notes = ex.notes || '';
-          EXECS[i].sites = sites;
-          if (oldName !== ex.name) LEADS.forEach(function (l) { if (l.exec === oldName) l.exec = ex.name; });
+          EXECS[i].name = String(ex.name).toUpperCase(); EXECS[i].phone = phone;
+          EXECS[i].active = ex.active === 'No' ? 'No' : 'Yes'; EXECS[i].notes = String(ex.notes || '').toUpperCase();
+          EXECS[i].sites = sites.map(function (s) { return String(s).toUpperCase(); });
+          if (oldName !== ex.name) LEADS.forEach(function (l) { if (l.exec === oldName) l.exec = String(ex.name).toUpperCase(); });
         }
       } else {
-        EXECS.push({ row: EXECS.length + 2, name: ex.name, phone: phone, active: ex.active === 'No' ? 'No' : 'Yes', notes: ex.notes || '', sites: sites });
+        EXECS.push({ row: EXECS.length + 2, name: String(ex.name).toUpperCase(), phone: phone, active: ex.active === 'No' ? 'No' : 'Yes', notes: String(ex.notes || '').toUpperCase(), sites: sites.map(function (s) { return String(s).toUpperCase(); }) });
       }
       return clone(EXECS.filter(function (e) { return e.name; }));
     },
@@ -142,13 +142,13 @@
 
     uiSaveSite: function (site) {
       site = site || {};
-      var name = String(site.name || '').trim();
+      var name = String(site.name || '').trim().toUpperCase();
       if (!name) throw new Error('Project site name is required');
       var old = '', row = Number(site.row) || 0;
       if (row) {
-        for (var i = 0; i < SITES.length; i++) if (SITES[i].row === row) { old = SITES[i].name; SITES[i].name = name; SITES[i].notes = site.notes || ''; }
+        for (var i = 0; i < SITES.length; i++) if (SITES[i].row === row) { old = SITES[i].name; SITES[i].name = name; SITES[i].notes = String(site.notes || '').toUpperCase(); }
       } else {
-        SITES.push({ row: SITES.length + 2, name: name, notes: site.notes || '' });
+        SITES.push({ row: SITES.length + 2, name: name, notes: String(site.notes || '').toUpperCase() });
       }
       if (old && old !== name) {
         EXECS.forEach(function (e) {
@@ -167,8 +167,9 @@
       var l = find(id);
       if (!l) throw new Error('Lead not found: ' + id);
       Object.keys(ch || {}).forEach(function (k) {
-        if (l[k] !== undefined) l[k] = ch[k];
-        else if (k === 'note') l.notes = (l.notes ? l.notes + '\n' : '') + ch[k];
+        if (k === 'note') l.notes = (l.notes ? l.notes + '\n' : '') + String(ch[k]).toUpperCase();
+        else if (k === 'exec') l.exec = String(ch[k] || '').toUpperCase();
+        else if (l[k] !== undefined) l[k] = ch[k];
       });
       l.updated = iso(new Date());
       LOG.push({ at: l.updated, id: id, type: 'Update', from: '', to: l.status, by: 'preview@local', note: JSON.stringify(ch || {}) });
@@ -188,11 +189,11 @@
       var exec = d.exec || (auto ? auto.name : '');
       var n = LEADS.length + 1, id = 'L-' + ('0000' + n).slice(-4);
       LEADS.push({
-        id: id, date: iso(new Date()), name: d.name || '', phone: digits ? '91' + digits.slice(-10) : '',
-        source: d.source || '', project: d.project || '', exec: exec, status: exec ? 'Assigned' : 'New',
-        lost: '', followup: '', notes: d.notes || '', wa: '', assignedAt: exec ? iso(new Date()) : '', updated: iso(new Date())
+        id: id, date: iso(new Date()), name: String(d.name || '').toUpperCase(), phone: digits ? '91' + digits.slice(-10) : '',
+        source: String(d.source || '').toUpperCase(), project: String(d.project || '').toUpperCase(), exec: String(exec || '').toUpperCase(), status: exec ? 'Assigned' : 'New',
+        lost: '', followup: '', notes: String(d.notes || '').toUpperCase(), wa: '', assignedAt: exec ? iso(new Date()) : '', updated: iso(new Date())
       });
-      return { ok: true, duplicate: false, lead_id: id, exec: exec, site: auto ? auto.site : '', waLink: exec ? waLink(findExec(exec), 'Lead ' + id) : '' };
+      return { ok: true, duplicate: false, lead_id: id, exec: String(exec || '').toUpperCase(), site: auto ? auto.site.toUpperCase() : '', waLink: exec ? waLink(findExec(exec), 'Lead ' + id) : '' };
     },
 
     uiGetHistory: function (id) {
