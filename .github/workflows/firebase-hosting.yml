@@ -23,5 +23,5 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: vassa-crm-gps
+          projectId: vassa-crm
           channelId: live

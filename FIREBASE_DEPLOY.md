@@ -1,7 +1,7 @@
 # Firebase Hosting — VassaCRM
 
 Deploy date: 12 Nov 2026
-Project (placeholder): `vassa-crm-gps` (Firebase project ID) — change if you created a different one
+Project (placeholder): `vassa-crm` (Firebase project ID) — change if you created a different one
 Hosting site: `vassa-crm`
 
 ---
@@ -12,7 +12,7 @@ Hosting site: `vassa-crm`
 |---|---|
 | CRM (index.html) | **https://vassa-crm.web.app** |
 | Alternate domain | https://vassa-crm.firebaseapp.com |
-| Firebase Console | https://console.firebase.google.com/project/vassa-crm-gps/overview |
+| Firebase Console | https://console.firebase.google.com/project/vassa-crm/overview |
 
 Backend (Google Apps Script) wahi hai:
 `https://script.google.com/macros/s/<YOUR_DEPLOY_ID>/exec`
@@ -42,7 +42,7 @@ Tools (Node/Firebase/gh) shared from `E:\Projects\Attendnce\tools\` (same machin
 
 ### Step 0 — One-time setup (aapko karna hai, main nahi kar sakta)
 
-1. Firebase Console → **Add project** → naam `vassa-crm-gps` (ya apna) → create
+1. Firebase Console → **Add project** → naam `vassa-crm` (ya apna) → create
 2. Project → **Hosting** → **Get started** → site naam `vassa-crm`
 3. **Project Settings → Service accounts → Firebase Admin SDK → Generate new private key** → JSON download
 4. GitHub repo `govind1111/vassa-crm` → **Settings → Secrets and variables → Actions → New repository secret**:
@@ -112,4 +112,4 @@ Backend me RPC gateway (`doGet ?api=true&fn=...`, `doPost {rpc:true}`) add kiya 
 ## Notes
 
 - Tools shared from attendance project: `E:\Projects\Attendnce\tools\` (node, firebase, gh)
-- `vassa-crm-gps.web.app` default site hai, delete nahi ho sakti (Firebase restriction) — isliye wahan redirect pages deploy karne pad sakte hain (attendance jaisa)
+- `vassa-crm.web.app` default site hai, delete nahi ho sakti (Firebase restriction) — isliye wahan redirect pages deploy karne pad sakte hain (attendance jaisa)
