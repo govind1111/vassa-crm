@@ -60,7 +60,7 @@ def main():
             check("dashboard renders (Total Leads)", "Total Leads" in dash_text, dash_text[:60].replace("\n"," "))
 
             side = page.inner_text("#side") if page.locator("#side").count() else ""
-            check("version string present", "v4.5" in side, side[-60:].replace("\n"," "))
+            check("version string present", "v4.6" in side, side[-60:].replace("\n"," "))
 
             check("sidebar: Lead Management section", "LEAD MANAGEMENT" in side.upper())
             check("sidebar: All Reports section", "ALL REPORTS" in side.upper())
