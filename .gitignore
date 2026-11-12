@@ -6,3 +6,5 @@ node_modules/
 Thumbs.db
 # generated preview file (regenerate from Index.html + mock.js)
 preview/index.html
+
+.firebase/
