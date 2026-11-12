@@ -8,12 +8,13 @@ Preview uses preview/mock.js (fake google.script.run) so no Apps Script needed.
 Checks:
   1. Page loads, no console/page errors
   2. Dashboard renders (Total Leads KPI)
-  3. Sidebar expands "Master Parameters" -> 3 sub-items
-  4. Master Parameters view renders tabs + content
+  3. Sidebar grouped sections (Lead Management / All Reports / Master Parameters)
+  4. Master Parameters sub-items present (Sales Executives, Project Sites, WhatsApp Templates)
   5. Project Sites master renders
-  6. Sales Executives master: edit dialog + Project Sites dropdown works
-  7. Add Lead dialog opens, saves, auto-assigns by site
-  8. Version string present
+  6. Sales Executives master renders
+  7. Exec edit dialog + Project Sites dropdown works
+  8. Add Lead dialog opens, saves, auto-assigns by site
+  9. Version string present
 
 Exit code 0 = all pass, 1 = failure. Safe to wire into deploy_safe.cmd.
 """
@@ -55,25 +56,21 @@ def main():
             check("page loads", page.title() != "", page.title())
             check("no console/page errors (initial)", len(errs) == 0, "; ".join(errs[:3]))
 
-            # dashboard
             dash_text = page.inner_text("#v-dash") if page.locator("#v-dash").count() else ""
             check("dashboard renders (Total Leads)", "Total Leads" in dash_text, dash_text[:60].replace("\n"," "))
 
-            # version string in sidebar
             side = page.inner_text("#side") if page.locator("#side").count() else ""
             check("version string present", "v4.4" in side, side[-60:].replace("\n"," "))
 
-            # expand Master Parameters in sidebar
-            mp_btn = page.locator("#side button", has_text="Master Parameters").first
-            if mp_btn.count():
-                mp_btn.click()
-                page.wait_for_timeout(500)
-            sub = page.locator("#side .sub.on")
-            check("sidebar expands Master Parameters", sub.count() > 0 and sub.locator("button").count() == 3,
-                  "sub buttons=%d" % (sub.locator("button").count() if sub.count() else 0))
+            check("sidebar: Lead Management section", "LEAD MANAGEMENT" in side.upper())
+            check("sidebar: All Reports section", "ALL REPORTS" in side.upper())
+            check("sidebar: Master Parameters section", "MASTER PARAMETERS" in side.upper())
+            check("Master Parameters has 3 sub-items",
+                  page.locator("#side button", has_text="Sales Executives").count() > 0 and
+                  page.locator("#side button", has_text="Project Sites").count() > 0 and
+                  page.locator("#side button", has_text="WhatsApp Templates").count() > 0)
 
-            # switch to Project Sites via sidebar
-            ps_btn = page.locator("#side .sub button", has_text="Project Sites").first
+            ps_btn = page.locator("#side button", has_text="Project Sites").first
             if ps_btn.count():
                 ps_btn.click()
                 page.wait_for_timeout(800)
@@ -81,8 +78,7 @@ def main():
             check("Project Sites master renders", "project site" in team_text.lower(),
                   team_text[:80].replace("\n"," "))
 
-            # switch to Sales Executives
-            se_btn = page.locator("#side .sub button", has_text="Sales Executives").first
+            se_btn = page.locator("#side button", has_text="Sales Executives").first
             if se_btn.count():
                 se_btn.click()
                 page.wait_for_timeout(800)
@@ -90,36 +86,29 @@ def main():
             check("Sales Executives master renders", "sales executive" in team_text2.lower(),
                   team_text2[:60].replace("\n"," "))
 
-            # open edit dialog on first exec
             edit_btn = page.locator("#v-team button", has_text="Edit").first
             if edit_btn.count():
                 edit_btn.click()
                 page.wait_for_timeout(600)
             dlg = page.locator(".dlg")
             check("exec edit dialog opens", dlg.count() > 0 and "Edit Sales Executive" in (dlg.inner_text() if dlg.count() else ""))
-            # dropdown exists
             dd = page.locator("#eSitesDD")
             check("Project Sites dropdown present", dd.count() > 0)
             if dd.count():
-                # open dropdown
                 page.locator("#eSitesDD [data-dd]").first.click()
                 page.wait_for_timeout(300)
-                menu_visible = page.locator("#eSitesDD .ddmenu").is_visible()
-                check("dropdown opens", menu_visible)
-                # toggle a checkbox
+                check("dropdown opens", page.locator("#eSitesDD .ddmenu").is_visible())
                 cbs = page.locator("#eSitesDD input[type=checkbox]")
                 if cbs.count():
                     cbs.first.click()
                     page.wait_for_timeout(200)
                     summary = page.locator("#eSitesTxt").inner_text() if page.locator("#eSitesTxt").count() else ""
                     check("dropdown count updates", "selected" in summary, summary)
-            # close dialog
             close_btn = page.locator(".dlg button", has_text="Cancel").first
             if close_btn.count():
                 close_btn.click()
                 page.wait_for_timeout(300)
 
-            # Add Lead dialog
             leads_btn = page.locator("button", has_text="Leads").first
             if leads_btn.count():
                 leads_btn.click()
@@ -130,7 +119,6 @@ def main():
                 page.wait_for_timeout(500)
             dlg2 = page.locator(".dlg")
             check("Add Lead dialog opens", dlg2.count() > 0 and "New Lead" in (dlg2.inner_text() if dlg2.count() else ""))
-            # fill and save
             if dlg2.count():
                 page.fill("#aName", "Smoke Test Lead")
                 page.fill("#aPhone", "9000000099")
@@ -139,13 +127,11 @@ def main():
                 page.wait_for_timeout(1500)
                 dialog_text = (page.locator(".dlg").inner_text() if page.locator(".dlg").count() else "")
                 check("lead saved (dialog)", "saved" in dialog_text.lower() or "L-0" in dialog_text, dialog_text[:80].replace("\n"," "))
-            # close any dialog
             cb = page.locator(".dlg button", has_text="Close").first
             if cb.count():
                 cb.click()
                 page.wait_for_timeout(300)
 
-            # final console check
             check("no console/page errors (full run)", len(errs) == 0, "; ".join(errs[:3]))
 
             browser.close()
