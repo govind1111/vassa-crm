@@ -1,0 +1,8 @@
+# VassaCRM - ignore large/generated/local-only files
+tools/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+# generated preview file (regenerate from Index.html + mock.js)
+preview/index.html
