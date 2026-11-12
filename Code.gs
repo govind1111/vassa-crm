@@ -1,5 +1,5 @@
 /**
- * Real Estate CRM - Google Sheets + Apps Script (v4.4 - site-wise auto-assign + RPC gateway for hosted frontend)
+ * Real Estate CRM - Google Sheets + Apps Script (v4.5 - lead ID generation fix)
  * Govind Gore | 2026-11
  *
  * Kya karta hai:
@@ -386,7 +386,12 @@ function findExecutive_(name) {
 }
 function nextLeadId_() {
   var p = PropertiesService.getScriptProperties();
-  var n = Math.max(Number(p.getProperty('LEAD_COUNTER') || 0), lastLeadNumber_()) + 1;
+  var counter = Number(p.getProperty('LEAD_COUNTER') || 0);
+  var last = lastLeadNumber_();
+  // Sheet blank/khaali ho to counter reset - taaki naya lead L-0001 se shuru ho
+  // (warna purana counter stale reh kar galat number de deta tha)
+  if (last === 0) { counter = 0; p.setProperty('LEAD_COUNTER', '0'); }
+  var n = Math.max(counter, last) + 1;
   p.setProperty('LEAD_COUNTER', String(n));
   return 'L-' + ('0000' + n).slice(-4);
 }

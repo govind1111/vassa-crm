@@ -15,7 +15,7 @@ Hosting site: `vassa-crm`
 | Firebase Console | https://console.firebase.google.com/project/vassa-crm/overview |
 
 Backend (Google Apps Script) wahi hai:
-`https://script.google.com/macros/s/<YOUR_DEPLOY_ID>/exec`
+`https://script.google.com/macros/s/AKfycbzuFJf0dMqzsxjWxS47-OjU38Lqq-2rM9DG1zt1JqLf_m9K-uNWgaAkIFf2wLTb_T54/exec`
 
 ---
 
