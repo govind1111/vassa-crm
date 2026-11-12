@@ -1,0 +1,14 @@
+backups/**
+firebase_hosting/**
+preview/**
+tests/**
+*.md
+*.cmd
+*.json
+!appsscript.json
+*.gs
+!Code.gs
+*.html
+!Index.html
+.git/**
+.gitignore
