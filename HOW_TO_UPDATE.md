@@ -10,7 +10,13 @@
 ## Step 2: GitHub + Firebase (frontend) update
 
 1. `Index.html` edit karo.
-2. Commit + push to `main` branch → GitHub Actions apne aap Firebase par deploy kar dega.
+2. Commit + push to `main` branch → GitHub Actions apne aap Firebase par deploy kar dega:
+   ```
+   git add -A
+   git commit -m "your message"
+   git push origin main
+   ```
+   (git path: `E:\Projects\Attendnce\tools\git\cmd\git.exe`, credential helper gh se configured)
    - Ya manually: `firebase_hosting\deploy.cmd` double-click (wo khud `Index.html` ko `public\index.html` me copy karta hai).
 3. Browser me Ctrl+Shift+R.
 
