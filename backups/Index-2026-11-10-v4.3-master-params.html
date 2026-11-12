@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vassa Properties CRM</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#0f172a;--mut:#64748b;--line:#e5e9f2;--pri:#4f46e5;--pri2:#eef2ff;--red:#dc2626;--redbg:#fef2f2;--grn:#16a34a;--amb:#d97706;--r:14px;--sh:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.05)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--pri);text-decoration:none}
+h2{font-size:20px;margin:0}h3{font-size:15px;margin:0 0 10px}
+.mut{color:var(--mut);font-size:12px}.red{color:var(--red)!important}.b{font-weight:700}
+/* layout */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 14px}
+.logo{height:30px;width:auto;display:block;flex:none}
+.top .t{flex:1;min-width:0}.top .t b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{border:0;background:var(--pri2);color:var(--pri);border-radius:10px;height:36px;min-width:36px;padding:0 10px;cursor:pointer;font-weight:600}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--pri);z-index:60;transition:width .3s}
+#bar.on{width:70%;transition:width 8s cubic-bezier(.1,.8,.2,1)}
+main{padding:14px 14px 96px;max-width:1200px;margin:0 auto}
+.view{display:none}.view.on{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+.bnav button,.side button{border:0;background:none;cursor:pointer;color:var(--mut)}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;padding:6px 0;border-radius:10px}
+.bnav button.on,.side button.on{color:var(--pri)}.bnav button.on svg{background:var(--pri2);border-radius:10px}
+.bnav svg{width:38px;height:26px;padding:3px 9px}
+.side{display:none}
+svg.i{fill:currentColor}
+@media(min-width:900px){
+  .bnav{display:none}
+  .side{display:flex;flex-direction:column;gap:4px;position:fixed;top:0;bottom:0;left:0;width:220px;background:#fff;border-right:1px solid var(--line);padding:14px 10px;z-index:21}
+  .side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;font-weight:700}
+  .side .brand img{width:150px;height:auto;display:block}
+  .side button{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;font-size:14px;text-align:left}
+  .side button svg{width:20px;height:20px}
+  .side button.on{background:var(--pri2);font-weight:600}
+  .side .caret{margin-left:auto;font-style:normal;font-size:10px;color:var(--mut);transition:transform .18s}
+  .side .exp .caret{transform:rotate(180deg)}
+  .side .sub{display:none;flex-direction:column;gap:2px;margin:0 0 4px 14px;border-left:2px solid var(--line);padding-left:6px}
+  .side .sub.on{display:flex}
+  .side .sub button{padding:7px 10px;font-size:13px;color:var(--mut);font-weight:500;background:none;border-radius:8px}
+  .side .sub button:hover{background:#f8fafc;color:var(--ink)}
+  .side .sub button.on{background:var(--pri2);color:var(--pri);font-weight:600}
+  .top,main{margin-left:220px}.top .logo{display:none}
+  /* desktop par master ke options sirf sidebar me - right panel me repeat nahi */
+  #masterSeg{display:none}
+  main{padding:20px 24px 40px}
+}
+/* cards */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin-bottom:12px}
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px;gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+@media(min-width:600px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1000px){.kpis{grid-template-columns:repeat(5,1fr)}}
+.kpi{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;cursor:pointer;border:0;text-align:left;position:relative;overflow:hidden}
+.kpi .n{font-size:24px;font-weight:800;letter-spacing:-.5px}.kpi .l{font-size:12px;color:var(--mut)}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,#cbd5e1)}
+.kpi.hero{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff}.kpi.hero .l{color:#e0e7ff}.kpi.hero:before{display:none}
+.grid2{display:grid;gap:12px}@media(min-width:900px){.grid2{grid-template-columns:1fr 1fr}}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.mini{background:#fff;border-radius:12px;box-shadow:var(--sh);padding:10px;text-align:center;cursor:pointer;border:0}
+.mini .n{font-size:20px;font-weight:800}.mini .l{font-size:11px;color:var(--mut)}
+.alert{background:var(--redbg);border:1px solid #fecaca}.alert h3{color:var(--red)}
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;background:#f1f5f9;color:#334155}
+.chip.dot:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-New{background:#dbeafe;color:#1d4ed8}.s-Assigned{background:#fef3c7;color:#b45309}.s-Contacted{background:#ede9fe;color:#6d28d9}
+.s-SiteVisit{background:#cffafe;color:#0e7490}.s-Negotiation{background:#ffedd5;color:#c2410c}.s-Closed{background:#dcfce7;color:#15803d}.s-Lost{background:#e5e7eb;color:#4b5563}
+.c-New{--c:#2563eb}.c-Assigned{--c:#d97706}.c-Contacted{--c:#7c3aed}.c-SiteVisit{--c:#0891b2}.c-Negotiation{--c:#ea580c}.c-Closed{--c:#16a34a}.c-Lost{--c:#6b7280}
+.chip.od{background:#fee2e2;color:#b91c1c}.chip.td{background:#fef3c7;color:#92400e}.chip.ok{background:#f1f5f9;color:#334155}
+/* list rows */
+.li{display:flex;gap:10px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border-bottom:0}.li .m{flex:1;min-width:0}.li .m b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none;background:var(--pri2);color:var(--pri)}
+.empty{color:var(--mut);text-align:center;padding:18px 8px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:600}td.n,th.n{text-align:right}
+.perf th,.perf td,.perf th.n,.perf td.n{text-align:center}
+.tw{overflow-x:auto}
+/* forms */
+label.f{display:block;font-size:12px;color:var(--mut);margin:8px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid #d6dce8;border-radius:10px;background:#fff;font-size:15px;outline:0}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px #e0e7ff}
+textarea{resize:vertical}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:6px;border:0;border-radius:10px;padding:10px 14px;background:var(--pri);color:#fff;font-weight:600;cursor:pointer;text-align:center}
+.btn.w{width:100%}.btn.sec{background:var(--pri2);color:var(--pri)}.btn.gry{background:#f1f5f9;color:#334155}.btn.grn{background:#16a34a}.btn.wa{background:#25d366;color:#fff}.btn.dng{background:#fee2e2;color:#b91c1c}
+.btn.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.5}
+/* Buttons: burgundy background + yellow text (Govind, 2026-11-05) */
+.btn,.btn.sec,.btn.gry,.btn.grn,.btn.wa,.btn.dng,.iconbtn{background:#6D1A36!important;color:#FFD23F!important}
+.btn:hover,.btn:active,.iconbtn:hover,.iconbtn:active{background:#571229!important}
+.btn:focus-visible,.iconbtn:focus-visible{outline:2px solid #FFD23F;outline-offset:2px}
+.seg{display:flex;background:#e9edf5;border-radius:12px;padding:3px;gap:2px;margin-bottom:12px;overflow-x:auto}
+.seg button{flex:1;border:0;background:none;padding:8px 10px;border-radius:9px;font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:var(--sh)}
+.filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0 12px}
+.filters select{padding:8px 10px;font-size:13px}
+.search{position:relative}.search input{padding-left:36px}.search:before{content:"⌕";position:absolute;left:12px;top:8px;font-size:18px;color:var(--mut)}
+/* lead cards */
+.lc{background:#fff;border-radius:12px;box-shadow:var(--sh);padding:12px;margin-bottom:10px;cursor:pointer}
+.lc .h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.lc .h b{font-size:14.5px}.lc .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+/* pipeline */
+.board{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;margin:0 -14px;padding-left:14px;padding-right:14px}
+.col{flex:0 0 82%;max-width:300px;background:#eceff6;border-radius:var(--r);padding:10px;scroll-snap-align:start}
+@media(min-width:600px){.col{flex:0 0 270px}}
+.col .ch{display:flex;justify-content:space-between;align-items:center;margin:0 2px 10px;font-weight:700}
+.col .ch .cnt{background:#fff;border-radius:999px;padding:1px 9px;font-size:12px}
+.col .bar{height:4px;border-radius:4px;background:var(--c);margin:-2px 2px 10px}
+.col .lc{padding:10px}.col .mv{margin-top:8px;padding:6px 8px;font-size:12.5px;border-radius:8px;background:#f8fafc}
+/* drawer & dialog */
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40;display:none}
+.scrim.on{display:block;animation:fade .15s}
+.drawer{position:fixed;left:0;right:0;bottom:0;max-height:92vh;background:#fff;border-radius:20px 20px 0 0;z-index:41;overflow:auto;transform:translateY(105%);transition:transform .25s ease;padding:0 16px 24px}
+.drawer.on{transform:none}
+.drawer .grab{width:40px;height:4px;background:#cbd5e1;border-radius:4px;margin:8px auto 4px}
+.dh{position:sticky;top:0;background:#fff;padding:8px 0 10px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;z-index:2;border-bottom:1px solid var(--line);margin-bottom:12px}
+@media(min-width:900px){.drawer{left:auto;top:0;width:480px;max-height:none;border-radius:0;transform:translateX(105%)}.drawer .grab{display:none}}
+.dlg{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);width:min(94vw,520px);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;z-index:51;padding:18px;display:none;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.dlg.on{display:block;transform:translate(-50%,-50%) scale(1);transition:transform .15s}
+#scrim2{z-index:50}
+.acts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media(min-width:420px){.acts{grid-template-columns:repeat(4,1fr)}}
+.acts .btn{flex-direction:column;font-size:12px;padding:8px 4px;gap:2px}.acts .btn span{font-size:18px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:12px}
+.kv div span{display:block;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px}
+.notes{background:#f8fafc;border-radius:10px;padding:10px;white-space:pre-wrap;font-size:13px;margin-bottom:12px;max-height:160px;overflow:auto}
+.waban{background:#dcfce7;border-radius:12px;padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.tl{position:relative;padding-left:18px}.tl:before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tl .e{position:relative;padding:0 0 12px}.tl .e:before{content:"";position:absolute;left:-17px;top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--pri)}
+/* toasts */
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:70;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,420px);pointer-events:none}
+@media(min-width:900px){#toasts{bottom:24px;left:auto;right:24px;transform:none;align-items:flex-end}}
+.toast{background:#0f172a;color:#fff;padding:10px 14px;border-radius:12px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:fade .2s;pointer-events:auto}
+.toast.err{background:#b91c1c}.toast.ok{background:#15803d}.toast.warn{background:#b45309}
+.spin{width:28px;height:28px;border:3px solid #e0e7ff;border-top-color:var(--pri);border-radius:50%;animation:sp .8s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* reports */
+.bars{display:flex;align-items:flex-end;gap:8px;height:180px;padding:10px 0 0;border-bottom:1px solid var(--line)}
+.bars .d{flex:1;display:flex;gap:3px;align-items:flex-end;height:100%;justify-content:center}
+.bars .v{width:40%;max-width:22px;border-radius:6px 6px 0 0;background:#818cf8;position:relative;min-height:2px}
+.bars .v.c{background:#22c55e}.bars .v i{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-style:normal;font-size:11px;color:var(--mut)}
+.blbl{display:flex;gap:8px}.blbl div{flex:1;text-align:center;font-size:11px;color:var(--mut);padding-top:4px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mut);margin-top:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.hbar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}.hbar .lb{width:110px;flex:none}.hbar .tr{flex:1;background:#f1f5f9;border-radius:6px;height:20px;overflow:hidden}
+.hbar .fl{height:100%;background:var(--c,#818cf8);border-radius:6px}.hbar .vl{width:44px;text-align:right;font-weight:700}
+.repacts{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.ctrl{display:flex;gap:8px;align-items:center;margin-bottom:12px}.ctrl input{max-width:200px}
+.stats4{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.stats4 div{background:#f8fafc;border-radius:10px;padding:10px}.stats4 b{display:block;font-size:20px}
+/* team */
+.ex{display:flex;gap:12px;align-items:center}
+.sw{position:relative;width:44px;height:26px;flex:none;border:0;border-radius:999px;background:#cbd5e1;cursor:pointer;transition:background .2s}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on{background:#16a34a}.sw.on:after{left:21px}
+.exg{display:grid;gap:12px}@media(min-width:700px){.exg{grid-template-columns:1fr 1fr}}
+.pv{background:#e7fbe9;border-radius:12px;padding:12px;white-space:pre-wrap;font-size:13.5px;border:1px solid #bbf7d0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.chips button{border:1px dashed #a5b4fc;background:var(--pri2);color:var(--pri);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+.chips button.on{background:var(--pri);border-style:solid;border-color:var(--pri);color:#fff;font-weight:600}
+/* dropdown (multi-select) */
+.dd{position:relative}
+.ddbtn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid #d6dce8;border-radius:10px;background:#fff;font-size:15px;text-align:left;cursor:pointer;color:var(--ink)}
+.dd.on .ddbtn{border-color:var(--pri);box-shadow:0 0 0 3px #e0e7ff}
+.dd .caret{font-style:normal;font-size:10px;color:var(--mut);transition:transform .18s}
+.dd.on .caret{transform:rotate(180deg)}
+.ddmenu{display:none;margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:4px;max-height:200px;overflow:auto;background:#fff}
+.dd.on .ddmenu{display:block}
+.ddmenu label{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:14px;cursor:pointer}
+.ddmenu label:hover{background:var(--pri2)}
+.ddmenu input[type=checkbox]{width:auto;margin:0;padding:0;accent-color:var(--pri)}
+@media print{
+  .top,.bnav,.side,.noprint,#toasts,.drawer,.dlg,.scrim,#bar{display:none!important}
+  .top,main{margin:0!important}main{padding:0!important;max-width:none}
+  body{background:#fff}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  .view{display:none!important}#v-reports{display:block!important}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<aside class="side" id="side"></aside>
+<header class="top"><img class="logo" id="topLogo" alt="Vassa Properties" src="data:image/webp;base64,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"><div class="t"><b id="ttl">Dashboard</b><span class="mut" id="sub"></span></div><button class="iconbtn" data-act="refresh" title="Refresh">↻</button></header>
+<main>
+  <div id="boot"><div class="spin"></div><p class="empty">Loading CRM…</p></div>
+  <section class="view" id="v-dash"></section>
+  <section class="view" id="v-pipe"></section>
+  <section class="view" id="v-agenda"></section>
+  <section class="view" id="v-leads"></section>
+  <section class="view" id="v-reports"></section>
+  <section class="view" id="v-team"></section>
+</main>
+<nav class="bnav" id="bnav"></nav>
+<div class="scrim" id="scrim" data-act="closeDrawer"></div>
+<div class="drawer" id="drawer"></div>
+<div class="scrim" id="scrim2" data-act="closeDlg"></div>
+<div class="dlg" id="dlg"></div>
+<div id="toasts"></div>
+<script>
+// Real Estate CRM - GUI v3 (Code.gs v4 ke saath). Vanilla JS, koi CDN nahi.
+/*CALC-START*/
+// ===== Pure compute functions (DOM nahi chhoote) - node harness inko alag se test karta hai =====
+var Calc = (function () {
+  var IST = 330 * 60000;
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var BUCKETS = ['Instagram', 'Facebook/Meta', 'Other'];
+  var CONTACTED_PLUS = ['Contacted', 'Site Visit', 'Negotiation', 'Closed'];
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function istDay(ms) { var d = new Date(ms + IST); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+  function isYmd(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s || '')); }
+  function ms(iso) {
+    if (!iso) return NaN;
+    var s = String(iso);
+    if (isYmd(s)) return Date.parse(s + 'T00:00:00+05:30');
+    return Date.parse(s);
+  }
+  function dayOf(iso) {
+    var t = ms(iso);
+    if (!isNaN(t)) return istDay(t);
+    var m = String(iso || '').match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : '';
+  }
+  function addDays(ymd, n) {
+    var d = new Date(Date.parse(ymd + 'T00:00:00Z') + n * 86400000);
+    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
+  }
+  function fmtDay(ymd) {
+    if (!isYmd(ymd)) return ymd || '';
+    var p = ymd.split('-');
+    return p[2] + ' ' + MONTHS[Number(p[1]) - 1];
+  }
+  function fmtMonth(ym) { var p = String(ym).split('-'); return MONTHS[Number(p[1]) - 1] + ' ' + p[0]; }
+  function fmtDT(iso) {
+    var t = ms(iso);
+    if (isNaN(t)) return iso || '';
+    var d = new Date(t + IST), h = d.getUTCHours(), ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return pad(d.getUTCDate()) + ' ' + MONTHS[d.getUTCMonth()] + ', ' + h + ':' + pad(d.getUTCMinutes()) + ' ' + ap;
+  }
+  function agoText(iso, nowMs) {
+    var t = ms(iso);
+    if (isNaN(t)) return '';
+    var m = Math.max(0, Math.round((nowMs - t) / 60000));
+    var n = m < 60 ? m : m < 1440 ? Math.floor(m / 60) : Math.floor(m / 1440);
+    var u = m < 60 ? 'Minute' : m < 1440 ? 'Hour' : 'Day';
+    if (n < 1) return 'Just Now';
+    return 'Before ' + n + ' ' + u + (n === 1 ? '' : 's');
+  }
+  function isOpen(l) { return l.status !== 'Closed' && l.status !== 'Lost'; }
+  function bucket(src) {
+    src = String(src || '');
+    if (/insta|(^|[^a-z])ig([^a-z]|$)/i.test(src)) return 'Instagram';
+    if (/facebook|meta|fb/i.test(src)) return 'Facebook/Meta';
+    return 'Other';
+  }
+  function pct(a, b) { return b ? Math.round(a * 1000 / b) / 10 : 0; }
+  function followState(l, today) {
+    if (!isOpen(l)) return '';
+    if (!isYmd(l.followup)) return 'none';
+    if (l.followup < today) return 'overdue';
+    if (l.followup === today) return 'today';
+    if (l.followup === addDays(today, 1)) return 'tomorrow';
+    return 'later';
+  }
+  function topKey(obj) {
+    var best = '', n = 0;
+    Object.keys(obj).forEach(function (k) { if (obj[k] > n) { n = obj[k]; best = k; } });
+    return best ? { key: best, count: n } : null;
+  }
+  function sortedPairs(obj) {
+    return Object.keys(obj).map(function (k) { return { key: k, count: obj[k] }; })
+      .sort(function (a, b) { return b.count - a.count; });
+  }
+  function leadMap(leads) { var m = {}; leads.forEach(function (l) { m[l.id] = l; }); return m; }
+  function execNames(D) {
+    var seen = {}, out = [];
+    (D.executives || []).forEach(function (e) { if (!seen[e.name]) { seen[e.name] = 1; out.push(e.name); } });
+    (D.leads || []).forEach(function (l) { if (l.exec && !seen[l.exec]) { seen[l.exec] = 1; out.push(l.exec); } });
+    return out;
+  }
+  function counts(leads, statuses) {
+    var c = {};
+    statuses.forEach(function (s) { c[s] = 0; });
+    leads.forEach(function (l) { if (c[l.status] === undefined) c[l.status] = 0; c[l.status]++; });
+    return c;
+  }
+  // log rows chronological order mein (purane pehle)
+  function chrono(log) {
+    return (log || []).slice().sort(function (a, b) { return (ms(a.at) || 0) - (ms(b.at) || 0); });
+  }
+
+  // ---------- Dashboard ----------
+  function dashboard(D, nowMs) {
+    var today = istDay(nowMs), leads = D.leads || [], staleMin = D.staleMinutes || 30;
+    var c = counts(leads, D.statuses || []);
+    var stale = leads.filter(function (l) {
+      var t = ms(l.assignedAt);
+      return l.status === 'Assigned' && !isNaN(t) && nowMs - t > staleMin * 60000;
+    }).sort(function (a, b) { return ms(a.assignedAt) - ms(b.assignedAt); });
+    var todayF = leads.filter(function (l) { return followState(l, today) === 'today'; });
+    var overdue = leads.filter(function (l) { return followState(l, today) === 'overdue'; })
+      .sort(function (a, b) { return a.followup < b.followup ? -1 : 1; });
+    var unassigned = leads.filter(function (l) { return !l.exec && isOpen(l); });
+    var perf = execNames(D).map(function (n) {
+      var mine = leads.filter(function (l) { return l.exec === n; });
+      return {
+        name: n, total: mine.length,
+        open: mine.filter(isOpen).length,
+        closed: mine.filter(function (l) { return l.status === 'Closed'; }).length,
+        overdue: mine.filter(function (l) { return followState(l, today) === 'overdue'; }).length,
+        stale: stale.filter(function (l) { return l.exec === n; }).length
+      };
+    });
+    return {
+      today: today, total: leads.length, counts: c, conv: pct(c.Closed || 0, leads.length),
+      stale: stale, todayF: todayF, overdue: overdue, unassigned: unassigned,
+      newUnassigned: leads.filter(function (l) { return l.status === 'New' && !l.exec; }).length,
+      perf: perf, recent: chrono(D.log).slice(-10).reverse()
+    };
+  }
+
+  // ---------- Agenda ----------
+  function agenda(leads, today) {
+    var a = { overdue: [], today: [], tomorrow: [], none: [] };
+    leads.forEach(function (l) {
+      var s = followState(l, today);
+      if (a[s]) a[s].push(l);
+    });
+    a.overdue.sort(function (x, y) { return x.followup < y.followup ? -1 : 1; });
+    return a;
+  }
+
+  // ---------- Leads list ----------
+  function filterLeads(leads, f) {
+    f = f || {};
+    var q = String(f.q || '').toLowerCase().trim(), qd = q.replace(/\D/g, '');
+    return leads.filter(function (l) {
+      if (f.status && l.status !== f.status) return false;
+      if (f.exec === '__none' && l.exec) return false;
+      if (f.exec && f.exec !== '__none' && l.exec !== f.exec) return false;
+      if (f.source) {
+        if (f.source.indexOf('b:') === 0 && bucket(l.source) !== f.source.slice(2)) return false;
+        if (f.source.indexOf('r:') === 0 && String(l.source) !== f.source.slice(2)) return false;
+      }
+      if (q) {
+        var hay = (l.name + ' ' + l.id + ' ' + l.phone).toLowerCase();
+        var ph = String(l.phone).replace(/\D/g, '');
+        if (hay.indexOf(q) < 0 && !(qd.length >= 3 && ph.indexOf(qd) > -1)) return false;
+      }
+      return true;
+    }).sort(function (a, b) {
+      var ta = ms(a.date), tb = ms(b.date);
+      if (isNaN(ta)) ta = -Infinity;
+      if (isNaN(tb)) tb = -Infinity;
+      if (tb !== ta) return tb - ta;
+      return String(b.id).localeCompare(String(a.id));
+    });
+  }
+  function csvCell(v) {
+    var s = String(v === null || v === undefined ? '' : v);
+    if (/^[=+\-@]/.test(s) && !/^[+\-]?\d[\d\s]*$/.test(s)) s = "'" + s; // spreadsheet formula injection se bachao
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function toCSV(headers, rows) {
+    return [headers].concat(rows).map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+  }
+  function leadsCSV(list) {
+    return toCSV(['Lead ID', 'Date', 'Name', 'Phone', 'Source / Campaign', 'Project / Property', 'Assigned Executive', 'Status', 'Lost Reason', 'Next Follow-up', 'Notes'],
+      list.map(function (l) { return [l.id, fmtDT(l.date), l.name, l.phone, l.source, l.project, l.exec, l.status, l.lost, l.followup, l.notes]; }));
+  }
+
+  // ---------- Reports ----------
+  function daily(D, ymd) {
+    var leads = D.leads || [], map = leadMap(leads), log = chrono(D.log);
+    var dayLog = log.filter(function (x) { return dayOf(x.at) === ymd; });
+    var newLeads = leads.filter(function (l) { return dayOf(l.date) === ymd; });
+    var bySource = { 'Instagram': 0, 'Facebook/Meta': 0, 'Other': 0 }, raw = {};
+    newLeads.forEach(function (l) { bySource[bucket(l.source)]++; var k = l.source || '(blank)'; raw[k] = (raw[k] || 0) + 1; });
+    var statusCh = {};
+    (D.statuses || []).forEach(function (s) { statusCh[s] = 0; });
+    var lostIds = {}, closedIds = {};
+    dayLog.forEach(function (x) {
+      if (x.type !== 'Status') return;
+      statusCh[x.to] = (statusCh[x.to] || 0) + 1;
+      if (x.to === 'Lost') lostIds[x.id] = 1;
+      if (x.to === 'Closed') closedIds[x.id] = 1;
+    });
+    var reasons = {};
+    Object.keys(lostIds).forEach(function (id) { var r = (map[id] && map[id].lost) || '(No reason)'; reasons[r] = (reasons[r] || 0) + 1; });
+    dayLog.forEach(function (x) { if (x.type === 'Lost Reason' && x.to && !lostIds[x.id]) reasons[x.to] = (reasons[x.to] || 0) + 1; });
+    var open = leads.filter(isOpen), fu = { pending: open.length, today: 0, tomorrow: 0, overdue: 0, none: 0 };
+    open.forEach(function (l) { var s = followState(l, ymd); if (fu[s] !== undefined) fu[s]++; });
+    var execs = execNames(D).map(function (n) {
+      var mine = leads.filter(function (l) { return l.exec === n; });
+      return {
+        name: n,
+        assigned: dayLog.filter(function (x) { return x.type === 'Assignment' && x.to === n; }).length,
+        updates: dayLog.filter(function (x) { return x.type === 'Status' && map[x.id] && map[x.id].exec === n && x.by !== 'AUTO'; }).length,
+        closed: Object.keys(closedIds).filter(function (id) { return map[id] && map[id].exec === n; }).length,
+        open: mine.filter(isOpen).length,
+        overdue: mine.filter(function (l) { return followState(l, ymd) === 'overdue'; }).length
+      };
+    });
+    return {
+      date: ymd, newCount: newLeads.length, bySource: bySource, topSource: topKey(bySource), topRawSource: topKey(raw),
+      statusChanges: statusCh, topLost: topKey(reasons), lostReasons: sortedPairs(reasons), followups: fu, execs: execs
+    };
+  }
+
+  function weekly(D, today) {
+    var log = D.log || [], days = [], maxV = 0, tn = 0, tc = 0;
+    for (var i = 6; i >= 0; i--) {
+      var d = addDays(today, -i), closed = {};
+      log.forEach(function (x) { if (x.type === 'Status' && x.to === 'Closed' && dayOf(x.at) === d) closed[x.id] = 1; });
+      var n = (D.leads || []).filter(function (l) { return dayOf(l.date) === d; }).length, c = Object.keys(closed).length;
+      maxV = Math.max(maxV, n, c); tn += n; tc += c;
+      days.push({ day: d, label: fmtDay(d), newLeads: n, closed: c });
+    }
+    return { from: addDays(today, -6), to: today, days: days, max: maxV, totalNew: tn, totalClosed: tc };
+  }
+
+  function monthly(D, ym, adSpend, nowMs) {
+    var leads = D.leads || [], map = leadMap(leads), log = D.log || [];
+    var inM = function (iso) { return dayOf(iso).slice(0, 7) === ym; };
+    var created = leads.filter(function (l) { return inM(l.date); });
+    var bySource = { 'Instagram': 0, 'Facebook/Meta': 0, 'Other': 0 }, raw = {};
+    created.forEach(function (l) { bySource[bucket(l.source)]++; var k = l.source || '(blank)'; raw[k] = (raw[k] || 0) + 1; });
+    var reached = {};
+    (D.statuses || []).forEach(function (s) { reached[s] = {}; });
+    created.forEach(function (l) { reached.New[l.id] = 1; });
+    log.forEach(function (x) {
+      if (!inM(x.at)) return;
+      if (x.type === 'Created' && reached.New) reached.New[x.id] = 1;
+      if (x.type === 'Status' && reached[x.to]) reached[x.to][x.id] = 1;
+    });
+    var funnel = (D.statuses || []).map(function (s) { return { status: s, count: Object.keys(reached[s]).length }; });
+    var reasons = {};
+    Object.keys(reached.Lost || {}).forEach(function (id) { var r = (map[id] && map[id].lost) || '(No reason)'; reasons[r] = (reasons[r] || 0) + 1; });
+    var closedBy = { 'Instagram': 0, 'Facebook/Meta': 0, 'Other': 0 };
+    Object.keys(reached.Closed || {}).forEach(function (id) { if (map[id]) closedBy[bucket(map[id].source)]++; });
+    var spend = (adSpend && adSpend[ym]) || {}, totSpend = 0;
+    var cost = BUCKETS.map(function (b) {
+      var sp = Number(spend[b]) || 0; totSpend += sp;
+      return { source: b, spend: sp, leads: bySource[b], closed: closedBy[b],
+        cpl: sp && bySource[b] ? Math.round(sp / bySource[b]) : null, cpb: sp && closedBy[b] ? Math.round(sp / closedBy[b]) : null };
+    });
+    var totClosed = Object.keys(reached.Closed || {}).length;
+    var monthStart = Date.parse(ym + '-01T00:00:00+05:30');
+    return {
+      month: ym, created: created.length, bySource: bySource, rawSources: sortedPairs(raw), funnel: funnel,
+      lostReasons: sortedPairs(reasons), cost: cost, totalSpend: totSpend, closed: totClosed,
+      cpl: totSpend && created.length ? Math.round(totSpend / created.length) : null,
+      cpb: totSpend && totClosed ? Math.round(totSpend / totClosed) : null,
+      partial: nowMs ? (nowMs - monthStart > 118 * 86400000) : false
+    };
+  }
+
+  function scorecard(D, today) {
+    var leads = D.leads || [], log = chrono(D.log);
+    var reachedBy = {}; // id -> {status:1}
+    log.forEach(function (x) { if (x.type === 'Status') { (reachedBy[x.id] = reachedBy[x.id] || {})[x.to] = 1; } });
+    var rows = execNames(D).map(function (n) {
+      var mine = leads.filter(function (l) { return l.exec === n; });
+      var contacted = mine.filter(function (l) {
+        if (CONTACTED_PLUS.indexOf(l.status) > -1) return true;
+        var r = reachedBy[l.id] || {};
+        return CONTACTED_PLUS.some(function (s) { return r[s]; });
+      }).length;
+      var sv = mine.filter(function (l) { return l.status === 'Site Visit' || l.status === 'Negotiation' || (reachedBy[l.id] || {})['Site Visit']; }).length;
+      var closed = mine.filter(function (l) { return l.status === 'Closed'; }).length;
+      // response time: Assignment -> pehla baad wala Status change (Assigned/New ke alawa)
+      var tot = 0, cnt = 0;
+      log.forEach(function (a, i) {
+        if (a.type !== 'Assignment' || a.to !== n) return;
+        var ta = ms(a.at);
+        for (var j = i + 1; j < log.length; j++) {
+          var b = log[j];
+          if (b.id !== a.id) continue;
+          if (b.type === 'Assignment') break;
+          if (b.type === 'Status' && b.to !== 'Assigned' && b.to !== 'New') {
+            var tb = ms(b.at);
+            if (!isNaN(ta) && !isNaN(tb) && tb >= ta) { tot += (tb - ta) / 60000; cnt++; }
+            break;
+          }
+        }
+      });
+      return {
+        name: n, assigned: mine.length, contacted: contacted, contactedPct: pct(contacted, mine.length),
+        avgResponse: cnt ? Math.round(tot / cnt) : null, responseSamples: cnt, siteVisits: sv, closed: closed,
+        conv: pct(closed, mine.length), overdue: mine.filter(function (l) { return followState(l, today) === 'overdue'; }).length, star: false
+      };
+    });
+    var best = rows.reduce(function (m, r) { return Math.max(m, r.closed); }, 0);
+    rows.forEach(function (r) { r.star = best > 0 && r.closed === best; });
+    rows.sort(function (a, b) { return b.closed - a.closed || b.conv - a.conv; });
+    return rows;
+  }
+
+  // ---------- Text digests (WhatsApp to Boss) ----------
+  function rupee(n) { return n === null || n === undefined ? '-' : '₹' + Number(n).toLocaleString('en-IN'); }
+  function head(company, title) { return (company ? '*' + company + '*\n' : '') + '*' + title + '*'; }
+  function dailyText(r, company) {
+    var t = [head(company, 'Daily Report - ' + fmtDay(r.date))];
+    t.push('New Leads: ' + r.newCount + ' (Instagram ' + r.bySource.Instagram + ', FB/Meta ' + r.bySource['Facebook/Meta'] + ', Other ' + r.bySource.Other + ')');
+    if (r.topSource) t.push('Top source: ' + r.topSource.key);
+    var sc = Object.keys(r.statusChanges).filter(function (k) { return r.statusChanges[k]; }).map(function (k) { return k + ' ' + r.statusChanges[k]; });
+    t.push('Status changes: ' + (sc.length ? sc.join(', ') : 'none'));
+    if (r.topLost) t.push('Top lost reason: ' + r.topLost.key + ' (' + r.topLost.count + ')');
+    t.push('Follow-ups: Pending ' + r.followups.pending + ' | Today ' + r.followups.today + ' | Tomorrow ' + r.followups.tomorrow + ' | Overdue ' + r.followups.overdue + ' | No date ' + r.followups.none);
+    r.execs.forEach(function (e) { t.push('- ' + e.name + ': assigned ' + e.assigned + ', updates ' + e.updates + ', closed ' + e.closed + ', open ' + e.open + ', overdue ' + e.overdue); });
+    return t.join('\n');
+  }
+  function weeklyText(r, company) {
+    var t = [head(company, 'Weekly Report ' + fmtDay(r.from) + ' - ' + fmtDay(r.to)), 'New Leads: ' + r.totalNew + ' | Closed: ' + r.totalClosed];
+    r.days.forEach(function (d) { t.push(d.label + ': new ' + d.newLeads + ', closed ' + d.closed); });
+    return t.join('\n');
+  }
+  function monthlyText(r, company) {
+    var t = [head(company, 'Monthly Report - ' + fmtMonth(r.month))];
+    t.push('New Leads: ' + r.created + ' (Instagram ' + r.bySource.Instagram + ', FB/Meta ' + r.bySource['Facebook/Meta'] + ', Other ' + r.bySource.Other + ')');
+    t.push('Funnel: ' + r.funnel.map(function (f) { return f.status + ' ' + f.count; }).join(' > '));
+    if (r.lostReasons.length) t.push('Lost reasons: ' + r.lostReasons.map(function (x) { return x.key + ' ' + x.count; }).join(', '));
+    if (r.totalSpend) t.push('Ad spend ' + rupee(r.totalSpend) + ' | Cost/lead ' + rupee(r.cpl) + ' | Cost/booking ' + rupee(r.cpb));
+    return t.join('\n');
+  }
+  function scoreText(rows, company, today) {
+    var t = [head(company, 'Team Scorecard - ' + fmtDay(today))];
+    rows.forEach(function (r) {
+      t.push((r.star ? '⭐ ' : '- ') + r.name + ': leads ' + r.assigned + ', contacted ' + r.contactedPct + '%, response ' + (r.avgResponse === null ? '-' : r.avgResponse + ' min') +
+        ', site visit ' + r.siteVisits + ', closed ' + r.closed + ' (' + r.conv + '%), overdue ' + r.overdue);
+    });
+    return t.join('\n');
+  }
+
+  // ---------- Templates ----------
+  function waPhone(p) {
+    var d = String(p || '').replace(/\D/g, '');
+    if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
+    if (d.length === 10) d = '91' + d;
+    return d;
+  }
+  function tplVars(l, company) {
+    l = l || {};
+    return { exec: l.exec || '', lead_id: l.id || '', name: l.name || '', phone: l.phone || '', project: l.project || '-',
+      source: l.source || '-', followup: l.followup ? fmtDay(l.followup) : '-', company: company || '' };
+  }
+  function fill(text, vars) {
+    return String(text || '').replace(/\{(\w+)\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m; });
+  }
+
+  return {
+    istDay: istDay, ms: ms, dayOf: dayOf, addDays: addDays, isYmd: isYmd, fmtDay: fmtDay, fmtMonth: fmtMonth, fmtDT: fmtDT, agoText: agoText,
+    isOpen: isOpen, bucket: bucket, BUCKETS: BUCKETS, pct: pct, followState: followState, counts: counts,
+    dashboard: dashboard, agenda: agenda, filterLeads: filterLeads, toCSV: toCSV, leadsCSV: leadsCSV,
+    daily: daily, weekly: weekly, monthly: monthly, scorecard: scorecard, rupee: rupee,
+    dailyText: dailyText, weeklyText: weeklyText, monthlyText: monthlyText, scoreText: scoreText,
+    waPhone: waPhone, tplVars: tplVars, fill: fill
+  };
+})();
+/*CALC-END*/
+
+// ===== UI (DOM) =====
+var S = null, VIEW = 'dash', REP = 'daily', TEAM = 'execs', PENDING = 0, DRAWER = null, DLG = null, CUR_REP = null;
+var LF = { q: '', status: '', exec: '', source: '' };
+var RS = { date: '', month: '' };
+var PH = ['exec', 'lead_id', 'name', 'phone', 'project', 'source', 'followup', 'company'];
+var ICON = {
+  dash: 'M3 13h8V3H3zm10 8h8V11h-8zM3 21h8v-6H3zm10-18v6h8V3z',
+  pipe: 'M4 4h4v16H4zm6 0h4v10h-4zm6 0h4v13h-4z',
+  agenda: 'M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zM5 10h14v10H5z',
+  leads: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z',
+  reports: 'M4 20h16v-2H4zm2-4h3V9H6zm5 0h3V4h-3zm5 0h3v-5h-3z',
+  team: 'M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2c-3 0-6 1.5-6 4v2h12v-2c0-2.5-3-4-6-4zm8 0c-.5 0-1 0-1.5.1 1.5 1 2.5 2.3 2.5 3.9v2h7v-2c0-2.5-5-4-8-4z'
+};
+var NAV = [['dash', 'Dashboard'], ['pipe', 'Pipeline'], ['agenda', 'Agenda'], ['leads', 'Leads'], ['reports', 'Reports'], ['team', 'Master Parameters']];
+// Master Parameters ke andar ke masters (sidebar me expand hote hain)
+var MASTER_TABS = [['execs', 'Sales Executives'], ['sites', 'Project Sites'], ['tpl', 'WhatsApp Templates']];
+var TEAM_OPEN = false;
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function cls(s) { return String(s || '').replace(/[^A-Za-z]/g, ''); }
+function svg(k) { return '<svg class="i" viewBox="0 0 24 24"><path d="' + ICON[k] + '"/></svg>'; }
+function today() { return Calc.istDay(Date.now()); }
+function chip(st) { return '<span class="chip s-' + cls(st) + '">' + esc(st || '-') + '</span>'; }
+function initials(n) { var p = String(n || '?').trim().split(/\s+/); return esc(((p[0] || '?').charAt(0) + (p[1] ? p[1].charAt(0) : '')).toUpperCase()); }
+function lead(id) { for (var i = 0; i < S.leads.length; i++) if (S.leads[i].id === id) return S.leads[i]; return null; }
+function execByName(n) { for (var i = 0; i < S.executives.length; i++) if (S.executives[i].name === n) return S.executives[i]; return null; }
+function tpl(id) { var t = (S.settings.templates || []).filter(function (x) { return x.id === id; })[0]; return t || null; }
+function fuChip(l, td) {
+  var s = Calc.followState(l, td);
+  if (s === 'none') return '<span class="chip od">No Follow-up Date</span>';
+  if (s === 'overdue') return '<span class="chip od">⏰ ' + esc(Calc.fmtDay(l.followup)) + '</span>';
+  if (s === 'today') return '<span class="chip td">📅 Today</span>';
+  if (s === 'tomorrow') return '<span class="chip ok">📅 Tomorrow</span>';
+  if (s === 'later') return '<span class="chip ok">📅 ' + esc(Calc.fmtDay(l.followup)) + '</span>';
+  return '';
+}
+function safeUrl(u) { return /^https:\/\/wa\.me\//.test(String(u || '')) ? String(u) : ''; }
+
+// ---------- toasts / busy / server calls ----------
+function toast(msg, type) {
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.textContent = msg;
+  $('toasts').appendChild(t);
+  setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, type === 'err' ? 5500 : 3200);
+}
+function busy(d) { PENDING = Math.max(0, PENDING + d); $('bar').className = PENDING ? 'on' : ''; }
+function errMsg(e) { return String((e && e.message) || e || 'Something went wrong').replace(/^(Exception|Error|ScriptError):\s*/, ''); }
+function call(fn, args, ok, fail) {
+  busy(1);
+  var r = google.script.run
+    .withSuccessHandler(function (res) { busy(-1); if (ok) ok(res); })
+    .withFailureHandler(function (e) { busy(-1); toast('⚠️ ' + errMsg(e), 'err'); if (fail) fail(e); });
+  r[fn].apply(r, args || []);
+}
+function load() {
+  call('uiGetAll', [], function (d) {
+    S = d;
+    S.settings = S.settings || { templates: [], adSpend: {}, company: '', bossPhone: '' };
+    S.sites = S.sites || [];
+    $('boot').style.display = 'none';
+    $('sub').textContent = S.settings.company || '';
+    go(VIEW);
+  }, function () {
+    $('boot').innerHTML = '<p class="empty">Could not load data. <button class="btn sm" data-act="refresh">Try Again</button></p>';
+  });
+}
+function sync() { call('uiGetAll', [], function (d) { S = d; render(); }); }
+
+// ---------- navigation ----------
+function renderNav() {
+  var b = '', s = '<div class="brand"><img src="' + esc($('topLogo').getAttribute('src')) + '" alt="Vassa Properties"></div>';
+  NAV.forEach(function (n) {
+    var on = n[0] === VIEW ? ' on' : '';
+    b += '<button class="' + on + '" data-act="go" data-v="' + n[0] + '">' + svg(n[0]) + '<span>' + n[1] + '</span></button>';
+    if (n[0] !== 'team') {
+      s += '<button class="' + on + '" data-act="go" data-v="' + n[0] + '">' + svg(n[0]) + '<span>' + n[1] + '</span></button>';
+      return;
+    }
+    // Master Parameters: click par expand / collapse
+    s += '<button class="' + on + (TEAM_OPEN ? ' exp' : '') + '" data-act="masterToggle">' + svg('team') + '<span>' + n[1] + '</span><i class="caret">▾</i></button>' +
+      '<div class="sub' + (TEAM_OPEN ? ' on' : '') + '">' + MASTER_TABS.map(function (t) {
+        return '<button class="' + (VIEW === 'team' && TEAM === t[0] ? 'on' : '') + '" data-act="masterTab" data-k="' + t[0] + '">' + t[1] + '</button>';
+      }).join('') + '</div>';
+  });
+  $('bnav').innerHTML = b; $('side').innerHTML = s;
+}
+function go(v) {
+  if (v === 'team') TEAM_OPEN = true;
+  VIEW = v; renderNav();
+  NAV.forEach(function (n) { $('v-' + n[0]).className = 'view' + (n[0] === v ? ' on' : ''); });
+  $('ttl').textContent = titleFor(v);
+  render();
+  window.scrollTo(0, 0);
+}
+// Header ka title: Master Parameters me "Master Parameters › <selected master>"
+function titleFor(v) {
+  if (v === 'team') {
+    var t = MASTER_TABS.filter(function (x) { return x[0] === TEAM; })[0], name = t ? t[1] : '';
+    return window.innerWidth < 900 ? name : 'Master Parameters › ' + name;
+  }
+  var n = NAV.filter(function (x) { return x[0] === v; })[0];
+  return n ? n[1] : '';
+}
+function render() {
+  if (!S) return;
+  if (VIEW === 'dash') renderDash();
+  else if (VIEW === 'pipe') renderPipe();
+  else if (VIEW === 'agenda') renderAgenda();
+  else if (VIEW === 'leads') renderLeads();
+  else if (VIEW === 'reports') renderReports();
+  else if (VIEW === 'team') renderTeam();
+}
+function leadRow(l, right) {
+  return '<div class="li" data-act="open" data-id="' + esc(l.id) + '"><div class="av">' + initials(l.name) + '</div><div class="m"><b>' + esc(l.name || '(No Name)') +
+    '</b><span class="mut">' + esc(l.id) + ' · ' + esc(l.project || '-') + ' · ' + esc(l.exec || 'Unassigned') + '</span></div>' + (right || '') + '</div>';
+}
+function listOr(arr, fn, empty, max) {
+  if (!arr.length) return '<div class="empty">' + empty + '</div>';
+  max = max || 1000;
+  return arr.slice(0, max).map(fn).join('') + (arr.length > max ? '<div class="mut" style="padding:8px 2px">+ ' + (arr.length - max) + ' more</div>' : '');
+}
+
+// ---------- 1. Dashboard ----------
+function renderDash() {
+  var d = Calc.dashboard(S, Date.now()), h = '';
+  h += '<div class="kpis"><button class="kpi hero" data-act="lf" data-status=""><div class="n">' + d.total + '</div><div class="l">Total Leads</div></button>' +
+    '<button class="kpi c-Closed" data-act="lf" data-status="Closed"><div class="n">' + d.conv + '%</div><div class="l">Conversion</div></button>';
+  S.statuses.forEach(function (s) {
+    h += '<button class="kpi c-' + cls(s) + '" data-act="lf" data-status="' + esc(s) + '"><div class="n">' + (d.counts[s] || 0) + '</div><div class="l">' + esc(s) + '</div></button>';
+  });
+  h += '</div><div class="minis"><button class="mini" data-act="lfUn"><div class="n">' + d.newUnassigned + '</div><div class="l">New & unassigned</div></button>' +
+    '<button class="mini" data-act="go" data-v="agenda"><div class="n">' + d.todayF.length + '</div><div class="l">Today\'s Follow-Up</div></button>' +
+    '<button class="mini" data-act="go" data-v="agenda"><div class="n' + (d.overdue.length ? ' red' : '') + '">' + d.overdue.length + '</div><div class="l">Overdue</div></button></div>';
+  h += '<div class="card' + (d.stale.length ? ' alert' : '') + '"><h3>🔴 Not Contacted, Since ' + (S.staleMinutes || 30) + ' Minutes (' + d.stale.length + ')</h3>' +
+    listOr(d.stale, function (l) { return leadRow(l, '<span class="chip od">' + esc(Calc.agoText(l.assignedAt, Date.now())) + '</span>'); }, 'Great! No assigned leads are pending ✅', 8) + '</div>';
+  h += '<div class="grid2"><div class="card"><h3>📅 Today\'s Follow-Ups</h3>' + listOr(d.todayF, function (l) { return leadRow(l, chip(l.status)); }, 'No follow-ups today', 6) +
+    '</div><div class="card"><h3 class="red">⏰ Overdue Follow-Ups</h3>' + listOr(d.overdue, function (l) { return leadRow(l, fuChip(l, d.today)); }, 'Nothing overdue ✅', 6) + '</div></div>';
+  h += '<div class="card"><h3>👥 Sales Executive Performance</h3><div class="tw"><table class="perf"><tr><th>Sales Executive</th><th class="n">Total</th><th class="n">Open</th><th class="n">Closed</th><th class="n">Overdue</th><th class="n">30 Minute Contact</th></tr>' +
+    (d.perf.length ? d.perf.map(function (p) {
+      var e = execByName(p.name);
+      return '<tr><td>' + esc(p.name) + (e && e.active === 'No' ? ' <span class="mut">(inactive)</span>' : '') + '</td><td class="n b">' + p.total + '</td><td class="n">' + p.open + '</td><td class="n">' + p.closed +
+        '</td><td class="n' + (p.overdue ? ' red' : '') + '">' + p.overdue + '</td><td class="n' + (p.stale ? ' red' : '') + '">' + p.stale + '</td></tr>';
+    }).join('') : '<tr><td colspan="6" class="mut">Add sales executives from the Team tab</td></tr>') + '</table></div></div>';
+  h += '<div class="card"><h3>🕘 Recent Activity</h3>' + listOr(d.recent, actRow, 'No activity yet') + '</div>';
+  $('v-dash').innerHTML = h;
+}
+function actRow(x) {
+  var l = lead(x.id);
+  return '<div class="li" ' + (l ? 'data-act="open" data-id="' + esc(x.id) + '"' : '') + '><div class="av" style="background:#f1f5f9;color:#475569">' + esc(String(x.type).charAt(0)) + '</div><div class="m"><b>' +
+    esc(x.id) + (l ? ' · ' + esc(l.name) : '') + '</b><span class="mut">' + esc(x.type) + ': ' + (x.from ? esc(x.from) + ' → ' : '') + esc(x.to) + ' · ' + esc(x.by) + '</span></div><span class="mut">' + esc(Calc.fmtDT(x.at)) + '</span></div>';
+}
+
+// ---------- 2. Pipeline ----------
+function renderPipe() {
+  var td = today(), h = '<p class="mut" style="margin:0 0 10px">Use "Move to" on a card to change its status. Tap a card to see full details.</p><div class="board">';
+  S.statuses.forEach(function (s) {
+    var list = S.leads.filter(function (l) { return l.status === s; });
+    h += '<div class="col c-' + cls(s) + '"><div class="ch"><span>' + esc(s) + '</span><span class="cnt">' + list.length + '</span></div><div class="bar"></div>';
+    h += list.length ? list.slice(0, 60).map(function (l) {
+      var opts = '<option value="">Move to…</option>' + S.statuses.filter(function (x) { return x !== s; }).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('');
+      return '<div class="lc" data-act="open" data-id="' + esc(l.id) + '"><div class="h"><b>' + esc(l.name || '(No Name)') + '</b><span class="mut">' + esc(l.id) + '</span></div>' +
+        '<div class="mut">' + esc(l.project || '-') + '</div><div class="meta"><span class="chip">' + esc(l.exec || 'Unassigned') + '</span>' + fuChip(l, td) + '</div>' +
+        '<select class="mv" data-chg="move" data-id="' + esc(l.id) + '">' + opts + '</select></div>';
+    }).join('') + (list.length > 60 ? '<button class="btn sm sec w" data-act="lf" data-status="' + esc(s) + '">View All ' + list.length + '</button>' : '')
+      : '';
+    h += '</div>';
+  });
+  $('v-pipe').innerHTML = h + '</div>';
+}
+function changeStatus(id, to) {
+  var l = lead(id);
+  if (!l || !to || to === l.status) return;
+  if (to === 'Lost') {
+    openDlg('<h3>Why was this lead lost?</h3><p class="mut">' + esc(l.name) + ' (' + esc(l.id) + ')</p><label class="f">Lost reason *</label><select id="qLost"><option value="">-- Select --</option>' +
+      S.lostReasons.map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select><label class="f">Note (optional)</label><textarea id="qNote" rows="2"></textarea>' +
+      dlgBtns('Mark as Lost'), function () {
+        var r = $('qLost').value;
+        if (!r) { toast('Please select a reason', 'warn'); return false; }
+        saveLead(id, { status: 'Lost', lost: r, note: $('qNote').value.trim() || undefined });
+      }, render);
+    return;
+  }
+  if ((S.followupRequired || []).indexOf(to) > -1 && !Calc.isYmd(l.followup)) {
+    askFollow(l, 'A next follow-up date is required for status "' + to + '"', function (dt, note) { saveLead(id, { status: to, followup: dt, note: note || undefined }); }, render);
+    return;
+  }
+  if (to === 'Assigned' && !l.exec) { toast('Please select a sales executive first', 'warn'); render(); openLead(id); return; }
+  saveLead(id, { status: to });
+}
+function askFollow(l, msg, ok, cancel) {
+  var td = today();
+  openDlg('<h3>When is the next follow-up?</h3><p class="mut">' + esc(msg) + '<br>' + esc(l.name) + ' (' + esc(l.id) + ')</p><div class="chips">' +
+    [['Today', 0], ['Tomorrow', 1], ['+3 Days', 3], ['+7 Days', 7]].map(function (q) { return '<button data-act="qd" data-d="' + Calc.addDays(td, q[1]) + '">' + q[0] + '</button>'; }).join('') +
+    '</div><label class="f">Date *</label><input type="date" id="qDate" min="' + td + '" value="' + Calc.addDays(td, 1) + '"><label class="f">Note (optional)</label><textarea id="qNote" rows="2" placeholder="What was discussed?"></textarea>' + dlgBtns('Save'),
+    function () {
+      var d = $('qDate').value;
+      if (!Calc.isYmd(d)) { toast('Please select a date', 'warn'); return false; }
+      ok(d, $('qNote').value.trim());
+    }, cancel);
+}
+function saveLead(id, ch, after) {
+  Object.keys(ch).forEach(function (k) { if (ch[k] === undefined) delete ch[k]; });
+  call('uiUpdateLead', [id, ch], function (r) {
+    if (r && r.lead) for (var i = 0; i < S.leads.length; i++) if (S.leads[i].id === id) S.leads[i] = r.lead;
+    toast('Saved ✅', 'ok');
+    render();
+    if (after) after(r);
+    sync();
+  }, function () { render(); });
+}
+
+// ---------- 3. Agenda ----------
+function renderAgenda() {
+  var td = today(), a = Calc.agenda(S.leads, td), h = '';
+  [['overdue', '⏰ Overdue', 'Nothing overdue ✅', ' red'], ['today', '📅 Today · ' + Calc.fmtDay(td), 'No follow-ups today', ''],
+    ['tomorrow', '🗓️ Tomorrow · ' + Calc.fmtDay(Calc.addDays(td, 1)), 'No follow-ups tomorrow', ''], ['none', '❓ No Follow-up Date', 'All open leads have a follow-up date ✅', '']].forEach(function (s) {
+    h += '<div class="card"><div class="sec-h"><h3 class="' + s[3] + '" style="margin:0">' + esc(s[1]) + '</h3><span class="chip">' + a[s[0]].length + '</span></div>' +
+      listOr(a[s[0]], function (l) { return leadRow(l, s[0] === 'overdue' ? fuChip(l, td) : chip(l.status)); }, s[2], 100) + '</div>';
+  });
+  $('v-agenda').innerHTML = h;
+}
+
+// ---------- 4. Leads ----------
+function renderLeads() {
+  var fresh = !$('lList');
+  if (fresh) {
+    $('v-leads').innerHTML = '<div class="row noprint"><div class="search"><input id="lQ" data-inp="lq" placeholder="Search by name, phone or Lead ID"></div>' +
+      '<button class="btn" style="flex:none" data-act="addLead">+ Lead</button></div><div class="filters"><select id="lS" data-chg="lf"></select><select id="lE" data-chg="lf"></select><select id="lSrc" data-chg="lf"></select></div>' +
+      '<div class="sec-h"><span class="mut" id="lCount"></span><button class="btn sm sec" data-act="leadsCsv">⬇ CSV</button></div><div id="lList"></div>';
+  }
+  if (fresh) $('lQ').value = LF.q; else LF.q = $('lQ').value; // typing ke beech background sync search box reset na kare
+  $('lS').innerHTML = '<option value="">All Statuses</option>' + S.statuses.map(function (s) { return '<option' + (s === LF.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  $('lE').innerHTML = '<option value="">All Sales Executives</option><option value="__none"' + (LF.exec === '__none' ? ' selected' : '') + '>Unassigned</option>' +
+    S.executives.map(function (e) { return '<option value="' + esc(e.name) + '"' + (e.name === LF.exec ? ' selected' : '') + '>' + esc(e.name) + (e.active === 'No' ? ' (inactive)' : '') + '</option>'; }).join('');
+  var raw = {};
+  S.leads.forEach(function (l) { if (l.source) raw[l.source] = 1; });
+  $('lSrc').innerHTML = '<option value="">All Sources</option>' + Calc.BUCKETS.map(function (b) { return '<option value="b:' + esc(b) + '"' + (LF.source === 'b:' + b ? ' selected' : '') + '>' + esc(b) + ' (All)</option>'; }).join('') +
+    Object.keys(raw).sort().map(function (s) { return '<option value="r:' + esc(s) + '"' + (LF.source === 'r:' + s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  renderLeadList();
+}
+function filtered() { return Calc.filterLeads(S.leads, LF); }
+function renderLeadList() {
+  var td = today(), list = filtered();
+  $('lCount').textContent = list.length + ' lead' + (list.length === 1 ? '' : 's');
+  $('lList').innerHTML = listOr(list, function (l) {
+    return '<div class="lc" data-act="open" data-id="' + esc(l.id) + '"><div class="h"><div><b>' + esc(l.name || '(No Name)') + '</b> <span class="mut">' + esc(l.id) + '</span></div>' + chip(l.status) + '</div>' +
+      '<div class="meta"><span class="mut">📞 ' + esc(l.phone || '-') + '</span><span class="mut">🏢 ' + esc(l.project || '-') + '</span></div><div class="meta"><span class="chip' + (l.exec ? '' : ' td') + '">👤 ' +
+      esc(l.exec || 'Unassigned') + '</span><span class="chip">' + esc(Calc.bucket(l.source)) + '</span>' + fuChip(l, td) + '<span class="mut">' + esc(Calc.fmtDT(l.date)) + '</span></div></div>';
+  }, 'No leads found', 200);
+}
+function addLeadDlg() {
+  var ex = S.executives.filter(function (e) { return e.active !== 'No'; });
+  openDlg('<h3>New Lead</h3><label class="f">Name</label><input id="aName"><label class="f">Phone</label><input id="aPhone" type="tel" placeholder="10 digits">' +
+    '<div class="row"><div><label class="f">Source / Campaign</label><input id="aSource" placeholder="Instagram, Facebook, Walk-in…"></div><div><label class="f">Project / Property</label><input id="aProject"></div></div>' +
+    '<label class="f">Sales Executive (optional)</label><select id="aExec"><option value="">-- Assign Later --</option>' + ex.map(function (e) { return '<option value="' + esc(e.name) + '">' + esc(e.name) + '</option>'; }).join('') + '</select>' +
+    '<label class="f">Notes</label><textarea id="aNotes" rows="2"></textarea>' + dlgBtns('Save Lead'), function () {
+      var d = { name: $('aName').value.trim(), phone: $('aPhone').value.trim(), source: $('aSource').value.trim(), project: $('aProject').value.trim(), exec: $('aExec').value, notes: $('aNotes').value.trim() };
+      if (!d.name && !d.phone) { toast('Please enter a name or phone number', 'warn'); return false; }
+      if (d.phone && d.phone.replace(/\D/g, '').length < 10) { toast('Please enter a 10-digit phone number', 'warn'); return false; }
+      call('uiAddLead', [d], function (r) {
+        if (r.duplicate) toast('This number already exists: ' + r.lead_id + ' (note added)', 'warn');
+        else toast('Lead ' + r.lead_id + (r.exec ? ' → ' + r.exec : '') + ' saved ✅', 'ok');
+        var link = safeUrl(r.waLink);
+        if (link) openDlg('<h3>Lead ' + esc(r.lead_id) + ' saved ✅</h3><p>' + (r.exec ? 'Auto-assigned to ' + esc(r.exec) + (r.site ? ' (site: ' + esc(r.site) + ')' : '') + '. Send the alert:' : 'Assigned to the sales executive. Send the alert:') + '</p><a class="btn wa w" target="_blank" href="' + esc(link) + '">Send on WhatsApp</a><div style="height:8px"></div><button class="btn gry w" data-act="closeDlg">Close</button>');
+        sync();
+      });
+    });
+}
+function leadsCsv() { showCsv('leads-' + today() + '.csv', Calc.leadsCSV(filtered())); }
+
+// ---------- 5. Lead detail drawer ----------
+function openLead(id, waLink) {
+  var l = lead(id);
+  if (!l) { toast('Lead not found', 'err'); return; }
+  DRAWER = { id: id };
+  var td = today(), company = S.settings.company || '';
+  var active = S.executives.filter(function (e) { return e.active !== 'No'; });
+  var eo = '<option value="">-- None --</option>' + active.map(function (e) { return '<option value="' + esc(e.name) + '"' + (e.name === l.exec ? ' selected' : '') + '>' + esc(e.name) + '</option>'; }).join('');
+  if (l.exec && !active.some(function (e) { return e.name === l.exec; })) eo += '<option value="' + esc(l.exec) + '" selected>' + esc(l.exec) + (execByName(l.exec) ? ' (inactive)' : ' (not in list)') + '</option>';
+  var so = S.statuses.map(function (s) { return '<option' + (s === l.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  var lo = '<option value="">-- Select --</option>' + S.lostReasons.map(function (s) { return '<option' + (s === l.lost ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  if (l.lost && S.lostReasons.indexOf(l.lost) < 0) lo += '<option selected>' + esc(l.lost) + '</option>';
+  var ph = Calc.waPhone(l.phone), vars = Calc.tplVars(l, company);
+  var w = tpl('welcome'), rm = tpl('reminder'), ex = execByName(l.exec);
+  var welcome = ph ? 'https://wa.me/' + ph + '?text=' + encodeURIComponent(Calc.fill(w ? w.text : '', vars)) : '';
+  var remind = ex && ex.phone && rm ? 'https://wa.me/' + Calc.waPhone(ex.phone) + '?text=' + encodeURIComponent(Calc.fill(rm.text, vars)) : '';
+  function act(href, ic, lbl, c) { return href ? '<a class="btn ' + c + '"' + (href.indexOf('tel:') === 0 ? '' : ' target="_blank"') + ' href="' + esc(href) + '"><span>' + ic + '</span>' + lbl + '</a>' : '<button class="btn gry" disabled><span>' + ic + '</span>' + lbl + '</button>'; }
+  function kv(k, v, c) { return '<div><span>' + k + '</span><b class="' + (c || '') + '">' + (v || '-') + '</b></div>'; }
+  var link = safeUrl(waLink), fs = Calc.followState(l, td);
+  var h = '<div class="grab"></div><div class="dh"><div><h2>' + esc(l.name || '(No Name)') + '</h2><span class="mut">' + esc(l.id) + '</span> ' + chip(l.status) + '</div><button class="iconbtn" data-act="closeDrawer">✕</button></div>';
+  if (link) h += '<div class="waban"><div><b>Lead assigned</b><br><span class="mut">Send an alert to the sales executive</span></div><a class="btn wa" target="_blank" href="' + esc(link) + '">Send on WhatsApp</a></div>';
+  h += '<div class="acts">' + act(l.phone ? 'tel:' + (ph ? '+' + ph : l.phone) : '', '📞', 'Call', 'sec') + act(ph ? 'https://wa.me/' + ph : '', '💬', 'WhatsApp', 'sec') +
+    act(welcome, '👋', 'Welcome Customer', 'wa') + act(remind, '⏰', 'Remind Sales Executive', 'sec') + '</div>';
+  h += '<div class="kv">' + kv('Phone', esc(l.phone)) + kv('Source', esc(l.source)) + kv('Project', esc(l.project)) + kv('Received', esc(Calc.fmtDT(l.date))) +
+    kv('Sales Executive', esc(l.exec) + (ex && ex.active === 'No' ? ' (inactive)' : '')) + kv('Assigned at', esc(Calc.fmtDT(l.assignedAt))) +
+    kv('Next follow-up', l.followup ? esc(Calc.fmtDay(l.followup)) : (fs === 'none' ? 'No Date' : ''), fs === 'overdue' || fs === 'none' ? 'red' : '') +
+    (l.lost ? kv('Lost reason', esc(l.lost)) : '') + kv('Last updated', esc(Calc.fmtDT(l.updated))) + (l.wa ? kv('WhatsApp alert', esc(l.wa)) : '') + '</div>';
+  if (l.notes) h += '<div class="notes">' + esc(l.notes) + '</div>';
+  h += '<div class="card" style="background:#f8fafc;box-shadow:none"><h3>Update Lead</h3><label class="f">Assigned Sales Executive (active only)</label><select id="dExec">' + eo + '</select>' +
+    '<div class="row"><div><label class="f">Status</label><select id="dStatus" data-chg="dStatus">' + so + '</select></div><div><label class="f">Next follow-up <span id="dFReq" class="red"></span></label><input type="date" id="dFollow" value="' + esc(Calc.isYmd(l.followup) ? l.followup : '') + '"></div></div>' +
+    '<div id="dLostBox" style="display:' + (l.status === 'Lost' ? 'block' : 'none') + '"><label class="f">Lost reason *</label><select id="dLost">' + lo + '</select></div>' +
+    '<label class="f">New note / call update</label><textarea id="dNote" rows="2" placeholder="What was discussed?"></textarea><button class="btn w" style="margin-top:10px" data-act="dSave" data-id="' + esc(l.id) + '">Save</button></div>';
+  h += '<h3 style="margin-top:6px">🕘 Timeline</h3><div id="dHist"><div class="spin" style="margin:16px auto"></div></div>';
+  $('drawer').innerHTML = h;
+  $('drawer').className = 'drawer on'; $('scrim').className = 'scrim on';
+  $('drawer').scrollTop = 0;
+  dStatusUi();
+  call('uiGetHistory', [id], function (hist) {
+    if (!DRAWER || DRAWER.id !== id || !$('dHist')) return;
+    $('dHist').innerHTML = hist.length ? '<div class="tl">' + hist.map(function (x) {
+      return '<div class="e"><b>' + esc(x.type) + '</b> ' + (x.from ? esc(x.from) + ' → ' : '') + esc(x.to) + (x.note ? '<br><span class="mut">' + esc(x.note) + '</span>' : '') +
+        '<br><span class="mut">' + esc(x.at) + ' · ' + esc(x.by) + '</span></div>';
+    }).join('') + '</div>' : '<div class="empty">No history yet</div>';
+  }, function () { if ($('dHist')) $('dHist').innerHTML = '<div class="empty">Could not load history</div>'; });
+}
+function dStatusUi() {
+  var s = $('dStatus').value;
+  $('dLostBox').style.display = s === 'Lost' ? 'block' : 'none';
+  $('dFReq').textContent = (S.followupRequired || []).indexOf(s) > -1 ? '*' : '';
+}
+function closeDrawer() { DRAWER = null; $('drawer').className = 'drawer'; $('scrim').className = 'scrim'; }
+function dSave(id) {
+  var l = lead(id), ch = {};
+  var ex = $('dExec').value, st = $('dStatus').value, fu = $('dFollow').value, note = $('dNote').value.trim();
+  if (ex !== (l.exec || '')) ch.exec = ex;
+  if (st !== l.status) ch.status = st;
+  if (st === 'Lost') { if (!$('dLost').value) { toast('Please select a lost reason', 'warn'); return; } if ($('dLost').value !== l.lost) ch.lost = $('dLost').value; }
+  if (fu !== (Calc.isYmd(l.followup) ? l.followup : '')) ch.followup = fu;
+  if ((S.followupRequired || []).indexOf(st) > -1 && !fu && !(l.followup && !Calc.isYmd(l.followup))) { toast('Please enter a next follow-up date for "' + st + '"', 'warn'); return; }
+  if (st === 'Assigned' && !ex) { toast('Please select a sales executive first', 'warn'); return; }
+  if (note) ch.note = note;
+  if (!Object.keys(ch).length) { toast('No changes to save'); return; }
+  saveLead(id, ch, function (r) { if (DRAWER && DRAWER.id === id) openLead(id, r && r.waLink); });
+}
+
+// ---------- dialogs ----------
+function dlgBtns(okLbl) { return '<div class="row" style="margin-top:14px"><button class="btn gry" data-act="closeDlg">Cancel</button><button class="btn" data-act="dlgOk">' + esc(okLbl) + '</button></div>'; }
+function openDlg(html, ok, cancel) {
+  DLG = { ok: ok, cancel: cancel };
+  $('dlg').innerHTML = html; $('dlg').className = 'dlg on'; $('scrim2').className = 'scrim on';
+  var f = $('dlg').querySelector('input:not([type=hidden]),select,textarea');
+  if (f && window.innerWidth > 700) try { f.focus(); } catch (e) {}
+}
+function closeDlg(cancelled) {
+  var d = DLG; DLG = null;
+  $('dlg').className = 'dlg'; $('scrim2').className = 'scrim';
+  if (cancelled && d && d.cancel) d.cancel();
+}
+function dlgOk() { if (!DLG || !DLG.ok) { closeDlg(); return; } var ok = DLG.ok; if (ok() === false) return; if (DLG && DLG.ok === ok) closeDlg(); }
+function confirmDlg(msg, okLbl, fn) { openDlg('<h3>Are you sure?</h3><p>' + esc(msg) + '</p>' + dlgBtns(okLbl), fn); }
+function showCsv(name, text) {
+  openDlg('<h3>CSV: ' + esc(name) + '</h3><p class="mut">If the download does not start, copy the text below and paste it into Sheets or Excel.</p><textarea id="csvTxt" rows="8" readonly style="font-size:12px">' + esc(text) +
+    '</textarea><div class="row" style="margin-top:10px"><button class="btn sec" data-act="csvCopy">Copy</button><button class="btn" data-act="csvDl" data-name="' + esc(name) + '">⬇ Download</button></div>' +
+    '<div style="height:8px"></div><button class="btn gry w" data-act="closeDlg">Close</button>');
+}
+function csvDownload(name) {
+  var text = $('csvTxt').value;
+  try {
+    var blob = new Blob(['\ufeff' + text], { type: 'text/csv;charset=utf-8' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.parentNode.removeChild(a); }, 1500);
+  } catch (e) { toast('Download failed. Please use Copy.', 'warn'); }
+}
+function copyText(el) {
+  el.focus(); el.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  if (!ok && navigator.clipboard) navigator.clipboard.writeText(el.value).then(function () { toast('Copied ✅', 'ok'); }, function () { toast('Text is selected. Press Ctrl/⌘+C.', 'warn'); });
+  else toast(ok ? 'Copied ✅' : 'Text is selected. Press Ctrl/⌘+C.', ok ? 'ok' : 'warn');
+}
+
+// ---------- 6. Reports ----------
+function renderReports() {
+  if (!RS.date) RS.date = today();
+  if (!RS.month) RS.month = today().slice(0, 7);
+  var segs = [['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['score', 'Scorecard']];
+  var ctrl = REP === 'daily' ? '<label class="mut">Date</label><input type="date" id="rDate" data-chg="rDate" value="' + RS.date + '" max="' + today() + '">' :
+    REP === 'monthly' ? '<label class="mut">Month</label><input type="month" id="rMonth" data-chg="rMonth" value="' + RS.month + '" placeholder="yyyy-mm">' :
+    REP === 'weekly' ? '<span class="mut">Last 7 days (up to today)</span>' : '<span class="mut">Full record of every sales executive (response time is based on the last 120 days of activity)</span>';
+  $('v-reports').innerHTML = '<div class="seg noprint">' + segs.map(function (s) { return '<button class="' + (s[0] === REP ? 'on' : '') + '" data-act="rep" data-k="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div>' +
+    '<div class="ctrl noprint">' + ctrl + '</div><div class="repacts noprint"><button class="btn sm sec" data-act="rPrint">🖨 Print / PDF</button><button class="btn sm sec" data-act="rCsv">⬇ CSV</button>' +
+    '<button class="btn sm wa" data-act="rBoss">💬 WhatsApp to Boss</button></div><div id="repBody"></div>';
+  renderRepBody();
+}
+function hbars(obj, keys, colorCls) {
+  var mx = 1; keys.forEach(function (k) { mx = Math.max(mx, obj[k] || 0); });
+  return keys.map(function (k) {
+    return '<div class="hbar ' + (colorCls ? 'c-' + cls(k) : '') + '"><span class="lb">' + esc(k) + '</span><span class="tr"><span class="fl" style="display:block;width:' + Math.round((obj[k] || 0) * 100 / mx) + '%"></span></span><span class="vl">' + (obj[k] || 0) + '</span></div>';
+  }).join('');
+}
+function st4(items) { return '<div class="stats4">' + items.map(function (i) { return '<div><b class="' + (i[2] || '') + '">' + esc(i[1]) + '</b><span class="mut">' + esc(i[0]) + '</span></div>'; }).join('') + '</div>'; }
+function renderRepBody() {
+  var co = S.settings.company || '', h = '', td = today();
+  var title = '<h2 style="margin-bottom:10px">' + esc(co ? co + ' · ' : '');
+  if (REP === 'daily') {
+    var r = Calc.daily(S, RS.date), totCh = 0;
+    Object.keys(r.statusChanges).forEach(function (k) { totCh += r.statusChanges[k]; });
+    h = title + 'Daily Report · ' + esc(Calc.fmtDay(r.date)) + '</h2>' + st4([['New Leads', r.newCount], ['Top source', r.topSource ? r.topSource.key : '-'], ['Status changes', totCh], ['Top lost reason', r.topLost ? r.topLost.key : '-']]) +
+      '<div class="grid2"><div class="card"><h3>New Leads by Source</h3>' + hbars(r.bySource, Calc.BUCKETS) + (r.topRawSource ? '<p class="mut">Top campaign: ' + esc(r.topRawSource.key) + ' (' + r.topRawSource.count + ')</p>' : '') + '</div>' +
+      '<div class="card"><h3>Status Changes (from Activity Log)</h3>' + hbars(r.statusChanges, S.statuses, true) + '</div></div>' +
+      '<div class="card"><h3>Follow-ups (as of ' + esc(Calc.fmtDay(r.date)) + ')</h3>' + st4([['Pending (open)', r.followups.pending], ['Today', r.followups.today], ['Tomorrow', r.followups.tomorrow], ['Overdue', r.followups.overdue, r.followups.overdue ? 'red' : ''], ['No Date', r.followups.none, r.followups.none ? 'red' : '']]) + '</div>' +
+      '<div class="card"><h3>By Sales Executive</h3><div class="tw"><table><tr><th>Sales Executive</th><th class="n">Assigned</th><th class="n">Updates</th><th class="n">Closed</th><th class="n">Open</th><th class="n">Overdue</th></tr>' +
+      r.execs.map(function (e) { return '<tr><td>' + esc(e.name) + '</td><td class="n">' + e.assigned + '</td><td class="n">' + e.updates + '</td><td class="n">' + e.closed + '</td><td class="n">' + e.open + '</td><td class="n' + (e.overdue ? ' red' : '') + '">' + e.overdue + '</td></tr>'; }).join('') + '</table></div></div>';
+    var rows = [['New Leads', '', r.newCount]];
+    Calc.BUCKETS.forEach(function (b) { rows.push(['Source', b, r.bySource[b]]); });
+    S.statuses.forEach(function (s) { rows.push(['Status change', s, r.statusChanges[s] || 0]); });
+    r.lostReasons.forEach(function (x) { rows.push(['Lost reason', x.key, x.count]); });
+    ['pending', 'today', 'tomorrow', 'overdue', 'none'].forEach(function (k) { rows.push(['Follow-up', k, r.followups[k]]); });
+    r.execs.forEach(function (e) { rows.push(['Sales Executive', e.name, 'assigned ' + e.assigned + ' | updates ' + e.updates + ' | closed ' + e.closed + ' | open ' + e.open + ' | overdue ' + e.overdue]); });
+    CUR_REP = { name: 'daily-report-' + r.date + '.csv', csv: Calc.toCSV(['Section', 'Item', 'Value'], rows), text: Calc.dailyText(r, co) };
+  } else if (REP === 'weekly') {
+    var w = Calc.weekly(S, td), mx = Math.max(1, w.max);
+    h = title + 'Weekly Report · ' + esc(Calc.fmtDay(w.from)) + ' – ' + esc(Calc.fmtDay(w.to)) + '</h2>' + st4([['New Leads (7 Days)', w.totalNew], ['Closed (7 Days)', w.totalClosed]]) +
+      '<div class="card"><div class="bars">' + w.days.map(function (d) {
+        return '<div class="d"><div class="v" style="height:' + Math.round(d.newLeads * 100 / mx) + '%"><i>' + d.newLeads + '</i></div><div class="v c" style="height:' + Math.round(d.closed * 100 / mx) + '%"><i>' + d.closed + '</i></div></div>';
+      }).join('') + '</div><div class="blbl">' + w.days.map(function (d) { return '<div>' + esc(d.label) + '</div>'; }).join('') + '</div>' +
+      '<div class="legend"><span><i style="background:#818cf8"></i>New Leads</span><span><i style="background:#22c55e"></i>Closed</span></div></div>' +
+      '<div class="card"><div class="tw"><table><tr><th>Day</th><th class="n">New Leads</th><th class="n">Closed</th></tr>' + w.days.map(function (d) { return '<tr><td>' + esc(d.label) + '</td><td class="n">' + d.newLeads + '</td><td class="n">' + d.closed + '</td></tr>'; }).join('') + '</table></div></div>';
+    CUR_REP = { name: 'weekly-report-' + w.to + '.csv', csv: Calc.toCSV(['Date', 'New Leads', 'Closed'], w.days.map(function (d) { return [d.day, d.newLeads, d.closed]; })), text: Calc.weeklyText(w, co) };
+  } else if (REP === 'monthly') {
+    var m = Calc.monthly(S, RS.month, S.settings.adSpend, Date.now()), fobj = {};
+    m.funnel.forEach(function (f) { fobj[f.status] = f.count; });
+    var spend = (S.settings.adSpend || {})[RS.month] || {};
+    h = title + 'Monthly Report · ' + esc(Calc.fmtMonth(m.month)) + '</h2>' + (m.partial ? '<div class="card alert noprint"><b class="red">Note:</b> the app only reads the last 120 days of the Activity Log, so this month\'s funnel and closed figures may be incomplete.</div>' : '') +
+      st4([['New Leads', m.created], ['Closed', m.closed], ['Ad spend', Calc.rupee(m.totalSpend)], ['Cost / lead', Calc.rupee(m.cpl)], ['Cost / booking', Calc.rupee(m.cpb)]]) +
+      '<div class="grid2"><div class="card"><h3>Leads by Source</h3>' + hbars(m.bySource, Calc.BUCKETS) +
+      (m.rawSources.length ? '<p class="mut">' + m.rawSources.slice(0, 6).map(function (x) { return esc(x.key) + ': ' + x.count; }).join(' · ') + '</p>' : '') + '</div>' +
+      '<div class="card"><h3>Funnel (unique leads reaching each stage this month)</h3>' + hbars(fobj, S.statuses, true) + '</div></div>' +
+      '<div class="grid2"><div class="card"><h3>Lost reasons</h3>' + (m.lostReasons.length ? '<table>' + m.lostReasons.map(function (x) { return '<tr><td>' + esc(x.key) + '</td><td class="n b">' + x.count + '</td></tr>'; }).join('') + '</table>' : '<div class="empty">No lost leads this month</div>') + '</div>' +
+      '<div class="card"><h3>Ad spend (₹) & cost</h3><div class="noprint">' + Calc.BUCKETS.map(function (b) {
+        return '<div class="row" style="align-items:center"><span>' + esc(b) + '</span><input type="number" min="0" step="1" inputmode="numeric" data-spend="' + esc(b) + '" value="' + esc(spend[b] || '') + '" placeholder="₹ 0"></div>';
+      }).join('') + '<button class="btn sm" data-act="saveSpend">Save Spend</button></div><div class="tw" style="margin-top:10px"><table><tr><th>Source</th><th class="n">Spend</th><th class="n">Leads</th><th class="n">₹/lead</th><th class="n">Closed</th><th class="n">₹/booking</th></tr>' +
+      m.cost.map(function (c) { return '<tr><td>' + esc(c.source) + '</td><td class="n">' + Calc.rupee(c.spend) + '</td><td class="n">' + c.leads + '</td><td class="n">' + Calc.rupee(c.cpl) + '</td><td class="n">' + c.closed + '</td><td class="n">' + Calc.rupee(c.cpb) + '</td></tr>'; }).join('') + '</table></div></div></div>';
+    var mrows = [['New Leads', '', m.created], ['Closed', '', m.closed]];
+    Calc.BUCKETS.forEach(function (b) { mrows.push(['Source', b, m.bySource[b]]); });
+    m.funnel.forEach(function (f) { mrows.push(['Funnel', f.status, f.count]); });
+    m.lostReasons.forEach(function (x) { mrows.push(['Lost reason', x.key, x.count]); });
+    m.cost.forEach(function (c) { mrows.push(['Ad spend', c.source, c.spend], ['Cost per lead', c.source, c.cpl === null ? '' : c.cpl], ['Cost per booking', c.source, c.cpb === null ? '' : c.cpb]); });
+    mrows.push(['Total spend', '', m.totalSpend], ['Cost per lead', 'Total', m.cpl === null ? '' : m.cpl], ['Cost per booking', 'Total', m.cpb === null ? '' : m.cpb]);
+    CUR_REP = { name: 'monthly-report-' + m.month + '.csv', csv: Calc.toCSV(['Section', 'Item', 'Value'], mrows), text: Calc.monthlyText(m, co) };
+  } else {
+    var sc = Calc.scorecard(S, td);
+    h = title + 'Team Scorecard · ' + esc(Calc.fmtDay(td)) + '</h2><div class="card"><div class="tw"><table><tr><th>Sales Executive</th><th class="n">Leads</th><th class="n">Contacted</th><th class="n">Avg response</th><th class="n">Site visits</th><th class="n">Closed</th><th class="n">Conv.</th><th class="n">Overdue</th></tr>' +
+      (sc.length ? sc.map(function (r) {
+        return '<tr><td>' + (r.star ? '⭐ ' : '') + '<b>' + esc(r.name) + '</b></td><td class="n">' + r.assigned + '</td><td class="n">' + r.contactedPct + '%</td><td class="n">' + (r.avgResponse === null ? '-' : r.avgResponse + ' min') +
+          '</td><td class="n">' + r.siteVisits + '</td><td class="n b">' + r.closed + '</td><td class="n">' + r.conv + '%</td><td class="n' + (r.overdue ? ' red' : '') + '">' + r.overdue + '</td></tr>';
+      }).join('') : '<tr><td colspan="8" class="mut">No sales executives</td></tr>') + '</table></div><p class="mut">Avg response = time from lead assignment to the first status update (Contacted, etc.). ⭐ = most Closed.</p></div>';
+    CUR_REP = { name: 'scorecard-' + td + '.csv', text: Calc.scoreText(sc, co, td),
+      csv: Calc.toCSV(['Sales Executive', 'Leads', 'Contacted', 'Contacted %', 'Avg response (min)', 'Site visits', 'Closed', 'Conversion %', 'Overdue', 'Star'],
+        sc.map(function (r) { return [r.name, r.assigned, r.contacted, r.contactedPct, r.avgResponse === null ? '' : r.avgResponse, r.siteVisits, r.closed, r.conv, r.overdue, r.star ? 'Yes' : '']; })) };
+  }
+  $('repBody').innerHTML = h;
+}
+function bossDlg() {
+  if (!CUR_REP) return;
+  openDlg('<h3>💬 WhatsApp to Boss</h3><label class="f">Message (you can edit it)</label><textarea id="bTxt" rows="10">' + esc(CUR_REP.text) + '</textarea>' +
+    '<label class="f">Boss\'s WhatsApp number (10 digits)</label><input id="bPh" type="tel" inputmode="numeric" maxlength="10" value="' + esc(S.settings.bossPhone || '') + '" placeholder="9876543210">' +
+    '<div class="row" style="margin-top:14px"><button class="btn gry" data-act="closeDlg">Cancel</button><button class="btn wa" data-act="bossSend">Open WhatsApp</button></div>');
+}
+function bossSend() {
+  var ph = $('bPh').value.replace(/\D/g, ''), txt = $('bTxt').value;
+  if (ph.length !== 10) { toast('Please enter the boss\'s 10-digit number', 'warn'); return; }
+  window.open('https://wa.me/91' + ph + '?text=' + encodeURIComponent(txt), '_blank');
+  if (ph !== S.settings.bossPhone) call('uiSaveSettings', [{ bossPhone: ph }], function (r) { S.settings = r.settings; toast('Boss number saved ✅', 'ok'); });
+  closeDlg();
+}
+function saveSpend() {
+  var ad = JSON.parse(JSON.stringify(S.settings.adSpend || {})), m = {};
+  Array.prototype.forEach.call(document.querySelectorAll('[data-spend]'), function (i) { var n = Number(i.value); if (n > 0) m[i.getAttribute('data-spend')] = Math.round(n); });
+  ad[RS.month] = m;
+  call('uiSaveSettings', [{ adSpend: ad }], function (r) { S.settings = r.settings; toast('Ad spend saved ✅', 'ok'); renderRepBody(); });
+}
+
+// ---------- 7. Master Parameters (Sales Executives / Project Sites / Templates) ----------
+function renderTeam() {
+  $('ttl').textContent = titleFor('team');
+  var h = '<div class="seg" id="masterSeg"><button class="' + (TEAM === 'execs' ? 'on' : '') + '" data-act="team" data-k="execs">👥 Sales Executives</button><button class="' + (TEAM === 'sites' ? 'on' : '') + '" data-act="team" data-k="sites">🏢 Project Sites</button><button class="' + (TEAM === 'tpl' ? 'on' : '') + '" data-act="team" data-k="tpl">💬 WhatsApp Templates</button></div>';
+  if (TEAM === 'execs') {
+    var ym = today().slice(0, 7), closedM = {};
+    (S.log || []).forEach(function (x) { if (x.type === 'Status' && x.to === 'Closed' && Calc.dayOf(x.at).slice(0, 7) === ym) closedM[x.id] = 1; });
+    h += '<div class="sec-h"><span class="mut">' + S.executives.length + ' sales executives · only Active ones appear in dropdowns</span><button class="btn sm" data-act="exEdit" data-row="">+ Sales Executive</button></div><div class="exg">';
+    h += S.executives.length ? S.executives.map(function (e) {
+      var mine = S.leads.filter(function (l) { return l.exec === e.name; }), open = mine.filter(Calc.isOpen).length;
+      var cm = mine.filter(function (l) { return closedM[l.id]; }).length, on = e.active !== 'No';
+      return '<div class="card"><div class="ex"><div class="av">' + initials(e.name) + '</div><div style="flex:1;min-width:0"><b>' + esc(e.name) + '</b>' + (on ? '' : ' <span class="chip">inactive</span>') +
+        '<br><span class="mut">📱 ' + esc(e.phone || '-') + '</span></div><button class="sw' + (on ? ' on' : '') + '" title="Active" data-act="exToggle" data-row="' + e.row + '"></button></div>' +
+        '<div class="stats4" style="margin:12px 0 8px"><div><b>' + open + '</b><span class="mut">Open leads</span></div><div><b>' + cm + '</b><span class="mut">Closed (this month)</span></div></div>' +
+        (e.notes ? '<p class="mut" style="margin:0 0 8px">' + esc(e.notes) + '</p>' : '') +
+        '<div class="chips" style="margin:0 0 10px">' + (e.sites && e.sites.length ? e.sites.map(function (s) { return '<span class="chip">🏢 ' + esc(s) + '</span>'; }).join('') : '<span class="mut">No project site assigned</span>') + '</div>' +
+        '<div class="row"><button class="btn sm sec" data-act="exEdit" data-row="' + e.row + '">Edit</button><button class="btn sm dng" data-act="exDel" data-row="' + e.row + '">Delete</button></div></div>';
+    }).join('') : '<div class="card empty">No sales executives yet. Tap "+ Sales Executive".</div>';
+    h += '</div>';
+  } else if (TEAM === 'sites') {
+    var sites = S.sites || [];
+    h += '<div class="sec-h"><span class="mut">' + sites.length + ' project sites · assign them to a sales executive in the Sales Executives tab</span><button class="btn sm" data-act="siteEdit" data-row="">+ Project Site</button></div><div class="exg">';
+    h += sites.length ? sites.map(function (s) {
+      var who = S.executives.filter(function (e) { return (e.sites || []).some(function (x) { return x.toLowerCase() === s.name.toLowerCase(); }); });
+      return '<div class="card"><div class="sec-h" style="margin:0 0 6px"><b>🏢 ' + esc(s.name) + '</b><span class="chip">' + (who.length ? who.length + ' exec' + (who.length > 1 ? 's' : '') : 'Unassigned') + '</span></div>' +
+        (s.notes ? '<p class="mut" style="margin:0 0 8px">' + esc(s.notes) + '</p>' : '') +
+        '<div class="chips" style="margin:0 0 10px">' + (who.length ? who.map(function (w) { return '<span class="chip">👤 ' + esc(w.name) + (w.active === 'No' ? ' (inactive)' : '') + '</span>'; }).join('') : '<span class="mut">No executive assigned yet</span>') + '</div>' +
+        '<div class="row"><button class="btn sm sec" data-act="siteEdit" data-row="' + s.row + '">Edit</button><button class="btn sm dng" data-act="siteDel" data-row="' + s.row + '">Delete</button></div></div>';
+    }).join('') : '<div class="card empty">No project sites yet. Tap "+ Project Site".</div>';
+    h += '</div>';
+  } else {
+    h += '<div class="card"><h3>Company Name</h3><div class="row"><input id="tCo" value="' + esc(S.settings.company || '') + '" placeholder="e.g. Vassa Properties"><button class="btn" style="flex:none" data-act="saveCo">Save</button></div><p class="mut" style="margin:6px 0 0">This name replaces {company} in templates.</p></div>' +
+      '<div class="sec-h"><span class="mut">The WhatsApp alert link for sales executives is built from the "Lead Assigned" template.</span><button class="btn sm" data-act="tplEdit" data-id="">+ Custom</button></div>';
+    h += S.settings.templates.map(function (t) {
+      return '<div class="card"><div class="sec-h" style="margin:0 0 6px"><b>' + esc(t.name) + '</b><span>' + (t.isDefault ? '<span class="chip">Default</span> ' : '') + '<span class="chip ' + (t.to === 'exec' ? 's-Contacted' : 's-Closed') + '">' + (t.to === 'exec' ? 'To Sales Executive' : 'To Customer') + '</span></span></div>' +
+        '<div class="mut" style="white-space:pre-wrap;max-height:62px;overflow:hidden">' + esc(t.text) + '</div><button class="btn sm sec" style="margin-top:8px" data-act="tplEdit" data-id="' + esc(t.id) + '">Edit / Preview</button></div>';
+    }).join('');
+  }
+  $('v-team').innerHTML = h;
+}
+function exDlg(row) {
+  var e = row ? S.executives.filter(function (x) { return String(x.row) === String(row); })[0] : { row: '', name: '', phone: '', active: 'Yes', notes: '', sites: [] };
+  if (!e) return;
+  var picked = (e.sites || []).map(function (s) { return s.toLowerCase(); });
+  var all = (S.sites || []).slice();
+  // jo site master me nahi hai par executive ke paas hai, wo bhi dikhao (purana data)
+  (e.sites || []).forEach(function (s) { if (!all.some(function (x) { return x.name.toLowerCase() === s.toLowerCase(); })) all.push({ name: s, row: '' }); });
+  var picker = all.length
+    ? '<div class="dd" id="eSitesDD"><button type="button" class="ddbtn" data-dd="1"><span id="eSitesTxt">' + sitesSummary(picked.length) + '</span><i class="caret">▾</i></button>' +
+      '<div class="ddmenu">' + all.map(function (s) {
+        var on = picked.indexOf(s.name.toLowerCase()) > -1;
+        return '<label><input type="checkbox" data-ddchg="1" value="' + esc(s.name) + '"' + (on ? ' checked' : '') + '><span>' + esc(s.name) + '</span></label>';
+      }).join('') + '</div></div>'
+    : '<p class="mut">No project sites yet. Add them in the Project Sites tab first.</p>';
+  openDlg('<h3>' + (row ? 'Edit Sales Executive' : 'New Sales Executive') + '</h3><label class="f">Name</label><input id="eName" value="' + esc(e.name) + '">' +
+    '<label class="f">WhatsApp number</label><input id="ePhone" type="tel" inputmode="numeric" placeholder="10 digits, e.g. 9876543210" value="' + esc(String(e.phone).replace(/^91(?=\d{10}$)/, '')) + '">' +
+    '<label class="f">Project Sites</label>' + picker +
+    '<div class="row"><div><label class="f">Active</label><select id="eActive"><option' + (e.active !== 'No' ? ' selected' : '') + '>Yes</option><option' + (e.active === 'No' ? ' selected' : '') + '>No</option></select></div>' +
+    '<div><label class="f">Notes</label><input id="eNotes" value="' + esc(e.notes) + '"></div></div>' + (row ? '<p class="mut">Changing the name will also update it in the Leads sheet.</p>' : '') + dlgBtns('Save'), function () {
+      var box = $('eSitesDD'), sites = [];
+      if (box) Array.prototype.forEach.call(box.querySelectorAll('input[type=checkbox]:checked'), function (c) { sites.push(c.value); });
+      var ex = { row: e.row, name: $('eName').value.trim(), phone: $('ePhone').value.trim(), active: $('eActive').value, notes: $('eNotes').value.trim(), sites: sites };
+      if (!ex.name) { toast('Please enter a name', 'warn'); return false; }
+      call('uiSaveExecutive', [ex], function (list) { S.executives = list; toast('Sales executive saved ✅', 'ok'); render(); sync(); });
+    });
+}
+function sitesSummary(n) { return n ? n + ' site' + (n > 1 ? 's' : '') + ' selected' : 'Select project sites'; }
+function ddSummary() {
+  var box = $('eSitesDD'), txt = $('eSitesTxt');
+  if (!box || !txt) return;
+  txt.textContent = sitesSummary(box.querySelectorAll('input[type=checkbox]:checked').length);
+}
+function exToggle(row) {
+  var e = S.executives.filter(function (x) { return String(x.row) === String(row); })[0];
+  if (!e) return;
+  var nx = { row: e.row, name: e.name, phone: e.phone, active: e.active === 'No' ? 'Yes' : 'No', notes: e.notes, sites: e.sites || [] };
+  e.active = nx.active; render();
+  call('uiSaveExecutive', [nx], function (list) { S.executives = list; toast(e.name + ': ' + (nx.active === 'Yes' ? 'Active' : 'Inactive'), 'ok'); render(); }, function () { e.active = nx.active === 'Yes' ? 'No' : 'Yes'; render(); });
+}
+function exDel(row) {
+  var e = S.executives.filter(function (x) { return String(x.row) === String(row); })[0];
+  if (!e) return;
+  var open = S.leads.filter(function (l) { return l.exec === e.name && Calc.isOpen(l); }).length;
+  if (open) { toast(e.name + ' has ' + open + ' open lead(s). Reassign them first or mark as Inactive.', 'warn'); return; }
+  confirmDlg('Remove ' + e.name + '? The name will remain on past leads and in the log.', 'Yes, Delete', function () {
+    call('uiDeleteExecutive', [e.row], function (list) { S.executives = list; toast('Sales executive removed', 'ok'); render(); });
+  });
+}
+function siteDlg(row) {
+  var s = row ? (S.sites || []).filter(function (x) { return String(x.row) === String(row); })[0] : { row: '', name: '', notes: '' };
+  if (!s) return;
+  openDlg('<h3>' + (row ? 'Edit Project Site' : 'New Project Site') + '</h3><label class="f">Project Site / Building</label><input id="pName" value="' + esc(s.name) + '" placeholder="e.g. Vassa Heights, Vassa Greens">' +
+    '<label class="f">Notes (optional)</label><input id="pNotes" value="' + esc(s.notes) + '" placeholder="Location, tower, plot numbers…">' +
+    (row ? '<p class="mut">Renaming will also update it on every sales executive.</p>' : '<p class="mut">Save it here, then assign it to a sales executive in the Sales Executives tab.</p>') + dlgBtns('Save'), function () {
+      var d = { row: s.row, name: $('pName').value.trim(), notes: $('pNotes').value.trim() };
+      if (!d.name) { toast('Please enter a project site name', 'warn'); return false; }
+      call('uiSaveSite', [d], function (r) { S.sites = r.sites; S.executives = r.executives; toast('Project site saved ✅', 'ok'); render(); sync(); });
+    });
+}
+function siteDel(row) {
+  var s = (S.sites || []).filter(function (x) { return String(x.row) === String(row); })[0];
+  if (!s) return;
+  var who = S.executives.filter(function (e) { return (e.sites || []).some(function (x) { return x.toLowerCase() === s.name.toLowerCase(); }); });
+  if (who.length) { toast(s.name + ' is assigned to ' + who.map(function (w) { return w.name; }).join(', ') + '. Remove it from them first.', 'warn'); return; }
+  confirmDlg('Remove ' + s.name + ' from Project Sites?', 'Yes, Delete', function () {
+    call('uiDeleteSite', [s.row], function (r) { S.sites = r.sites; S.executives = r.executives; toast('Project site removed', 'ok'); render(); });
+  });
+}
+function saveTemplates(list, okMsg, after) {
+  call('uiSaveSettings', [{ templates: list }], function (r) { S.settings = r.settings; S.defaults = r.defaults; toast(okMsg || 'Template saved ✅', 'ok'); render(); if (after) after(); });
+}
+function tplDlg(id) {
+  var t = id ? tpl(id) : { id: '', name: '', to: 'customer', text: '', isDefault: false };
+  if (!t) return;
+  var leads = S.leads.slice(0, 60);
+  openDlg('<h3>' + (id ? 'Edit Template' : 'New Custom Template') + '</h3><label class="f">Name</label><input id="tName" value="' + esc(t.name) + '"' + (t.isDefault ? ' disabled' : '') + '>' +
+    (t.isDefault ? '' : '<label class="f">Send to</label><select id="tTo"><option value="customer"' + (t.to !== 'exec' ? ' selected' : '') + '>To Customer</option><option value="exec"' + (t.to === 'exec' ? ' selected' : '') + '>To Sales Executive</option></select>') +
+    '<label class="f">Message</label><div class="chips">' + PH.map(function (p) { return '<button data-act="ins" data-ph="{' + p + '}">{' + p + '}</button>'; }).join('') + '</div>' +
+    '<textarea id="tText" rows="7" data-inp="tplPrev">' + esc(t.text) + '</textarea><label class="f">Preview with this lead</label><select id="tLead" data-chg="tplPrev">' +
+    (leads.length ? leads.map(function (l) { return '<option value="' + esc(l.id) + '">' + esc(l.id + ' · ' + (l.name || '')) + '</option>'; }).join('') : '<option value="">(sample)</option>') + '</select>' +
+    '<div class="pv" id="tPrev" style="margin-top:8px"></div><div class="row" style="margin-top:14px">' +
+    (t.isDefault ? '<button class="btn gry" data-act="tplReset" data-id="' + esc(t.id) + '">Reset default</button>' : (id ? '<button class="btn dng" data-act="tplDel" data-id="' + esc(t.id) + '">Delete</button>' : '')) +
+    '<button class="btn gry" data-act="closeDlg">Cancel</button><button class="btn" data-act="dlgOk">Save</button></div>', function () {
+      var text = $('tText').value, name = $('tName').value.trim();
+      if (!text.trim()) { toast('Message cannot be empty', 'warn'); return false; }
+      if (!name) { toast('Please enter a template name', 'warn'); return false; }
+      var list = S.settings.templates.map(function (x) { return { id: x.id, name: x.name, to: x.to, text: x.text }; });
+      if (id) list.forEach(function (x) { if (x.id === id) { x.text = text; if (!t.isDefault) { x.name = name; x.to = $('tTo').value; } } });
+      else list.push({ id: 'c' + Date.now().toString(36), name: name, to: $('tTo').value, text: text });
+      saveTemplates(list);
+    });
+  tplPreview();
+}
+function tplPreview() {
+  if (!$('tPrev')) return;
+  var l = lead($('tLead').value) || { id: 'L-0001', name: 'Ramesh Patil', phone: '919800000000', project: 'Green Valley', source: 'Instagram', exec: 'Amit', followup: today() };
+  $('tPrev').textContent = Calc.fill($('tText').value, Calc.tplVars(l, S.settings.company));
+}
+function insertPh(ph) {
+  var ta = $('tText'), s = ta.selectionStart || ta.value.length, e = ta.selectionEnd || s;
+  ta.value = ta.value.slice(0, s) + ph + ta.value.slice(e);
+  ta.focus(); try { ta.setSelectionRange(s + ph.length, s + ph.length); } catch (x) {}
+  tplPreview();
+}
+
+// ---------- events (delegation: koi inline JS nahi, XSS-safe) ----------
+var ACT = {
+  refresh: function () { $('boot').style.display = S ? 'none' : 'block'; load(); },
+  go: function (el) { closeDrawer(); go(el.getAttribute('data-v')); },
+  open: function (el) { openLead(el.getAttribute('data-id')); },
+  closeDrawer: closeDrawer,
+  closeDlg: function () { closeDlg(true); },
+  dlgOk: dlgOk,
+  lf: function (el) { LF = { q: '', status: el.getAttribute('data-status') || '', exec: '', source: '' }; if ($('lQ')) $('lQ').value = ''; go('leads'); },
+  lfUn: function () { LF = { q: '', status: 'New', exec: '__none', source: '' }; if ($('lQ')) $('lQ').value = ''; go('leads'); },
+  addLead: addLeadDlg,
+  leadsCsv: leadsCsv,
+  dSave: function (el) { dSave(el.getAttribute('data-id')); },
+  qd: function (el) { $('qDate').value = el.getAttribute('data-d'); },
+  csvCopy: function () { copyText($('csvTxt')); },
+  csvDl: function (el) { csvDownload(el.getAttribute('data-name')); },
+  rep: function (el) { REP = el.getAttribute('data-k'); renderReports(); },
+  rPrint: function () { window.print(); },
+  rCsv: function () { if (CUR_REP) showCsv(CUR_REP.name, CUR_REP.csv); },
+  rBoss: bossDlg,
+  bossSend: bossSend,
+  saveSpend: saveSpend,
+  team: function (el) { TEAM = el.getAttribute('data-k'); renderTeam(); renderNav(); },
+  masterToggle: function () {
+    if (TEAM_OPEN) { TEAM_OPEN = false; renderNav(); }
+    else if (VIEW === 'team') { TEAM_OPEN = true; renderNav(); }
+    else { TEAM_OPEN = true; go('team'); }
+  },
+  masterTab: function (el) { TEAM = el.getAttribute('data-k'); TEAM_OPEN = true; go('team'); },
+  siteEdit: function (el) { siteDlg(el.getAttribute('data-row')); },
+  siteDel: function (el) { siteDel(el.getAttribute('data-row')); },
+  exEdit: function (el) { exDlg(el.getAttribute('data-row')); },
+  exToggle: function (el) { exToggle(el.getAttribute('data-row')); },
+  exDel: function (el) { exDel(el.getAttribute('data-row')); },
+  saveCo: function () { call('uiSaveSettings', [{ company: $('tCo').value.trim() }], function (r) { S.settings = r.settings; $('sub').textContent = S.settings.company || ''; toast('Company saved ✅', 'ok'); }); },
+  tplEdit: function (el) { tplDlg(el.getAttribute('data-id')); },
+  ins: function (el) { insertPh(el.getAttribute('data-ph')); },
+  tplReset: function (el) {
+    var d = (S.defaults || []).filter(function (x) { return x.id === el.getAttribute('data-id'); })[0];
+    if (d) { $('tText').value = d.text; tplPreview(); toast('Default text restored — tap Save'); }
+  },
+  tplDel: function (el) {
+    var id = el.getAttribute('data-id');
+    closeDlg();
+    confirmDlg('Delete this custom template?', 'Delete', function () {
+      saveTemplates(S.settings.templates.filter(function (x) { return x.id !== id; }).map(function (x) { return { id: x.id, name: x.name, to: x.to, text: x.text }; }), 'Template deleted');
+    });
+  }
+};
+document.addEventListener('click', function (e) {
+  var el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el) return;
+  if (el.tagName === 'SELECT' || el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
+  if (e.target.closest('select,input,textarea,a') && el.getAttribute('data-act') === 'open') return; // card ke andar dropdown/link
+  var f = ACT[el.getAttribute('data-act')];
+  if (f) { e.preventDefault(); f(el, e); }
+});
+// Project Sites dropdown (executive dialog) - button par tap = open/close
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-dd]') : null;
+  if (!b) return;
+  e.preventDefault();
+  var w = b.parentNode;
+  w.className = w.className.indexOf('on') > -1 ? 'dd' : 'dd on';
+});
+document.addEventListener('change', function (e) {
+  var el = e.target, k = el.getAttribute && el.getAttribute('data-chg');
+  if (el.getAttribute && el.getAttribute('data-ddchg')) { ddSummary(); return; }
+  if (!k) return;
+  if (k === 'move') changeStatus(el.getAttribute('data-id'), el.value);
+  else if (k === 'lf') { LF.status = $('lS').value; LF.exec = $('lE').value; LF.source = $('lSrc').value; renderLeadList(); }
+  else if (k === 'dStatus') dStatusUi();
+  else if (k === 'rDate') { if (Calc.isYmd(el.value)) { RS.date = el.value; renderRepBody(); } }
+  else if (k === 'rMonth') { if (/^\d{4}-\d{2}$/.test(el.value)) { RS.month = el.value; renderRepBody(); } }
+  else if (k === 'tplPrev') tplPreview();
+});
+var qT = null;
+document.addEventListener('input', function (e) {
+  var k = e.target.getAttribute && e.target.getAttribute('data-inp');
+  if (k === 'lq') { clearTimeout(qT); qT = setTimeout(function () { LF.q = $('lQ').value; renderLeadList(); }, 150); }
+  else if (k === 'tplPrev') tplPreview();
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (DLG) closeDlg(true); else if (DRAWER) closeDrawer(); } });
+
+renderNav();
+load();
+</script>
+</body>
+</html>
